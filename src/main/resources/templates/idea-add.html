@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+
+<!-- Header -->
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+            </ol>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="d-block w-100" th:src="@{/images/{image}(image=${firstImg})}" alt="First slide">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h3>Take advantage of our innovation spaces!</h3>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="d-block w-100" th:src="@{/images/{image}(image=${secondImg})}" alt="Second slide">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h3>Meet new collaborators!</h3>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="d-block w-100" th:src="@{/images/{image}(image=${thirdImg})}" alt="Third slide">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h3>Get mentoring!</h3>
+                    </div>
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+    <!-- Text -->
+    <div class="d-flex justify-content-center ">
+        <div class="inner">
+            <h3>Propose a project idea</h3>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center ">
+        <div class="row g-3">
+            <form
+                    th:action="@{/ideas/add}"
+                    th:object="${ideaAddBindingModel}"
+
+                    method="POST">
+                <!-- Name -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputName" class="col-form-label ">Name</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="name"
+                               th:value="*{name}"
+                               th:errorclass="is-invalid"
+                               type="text"
+                               required minlength="3" maxlength="250"
+                               id="inputName"
+                               class="form-control"
+                               aria-describedby="nameHelpInline">
+                        <small id="nameError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">The name must be
+                            at least 3 characters long and not longer than 250 characters</small>
+
+                    </div>
+                </div>
+                <!-- EO: Name -->
+
+                <!-- Description -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputDescription" class="col-form-label ">Description</label>
+                    </div>
+                    <div class="col-auto">
+                        <textarea name="description"
+                                  th:field="*{description}"
+                                  th:value="*{description}"
+                                  th:errorclass="is-invalid"
+                                  id="inputDescription"
+                                  required minlength="10" maxlength="1500"
+                                  class="form-control"
+                                  aria-describedby="descriptionInline">
+                        </textarea>
+                        <small id="descriptionError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">The description must be
+                            at least 10 characters long and not longer than 1500 characters</small>
+                    </div>
+                </div>
+                <!-- EO: Description -->
+                <!-- Duration -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputDuration" class="col-form-label">Duration in days (max. 5) </label>
+                    </div>
+                    <div class="col-auto">
+                        <input required
+                               name="duration"
+                               th:value="*{duration}"
+                               th:errorclass="is-invalid"
+                               type="number" min="1" max="5"
+                               id="inputDuration"
+                               class="form-control"
+                               aria-describedby="durationHelpInline">
+                        <small id="durationError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">Enter a number between 1
+                            and 5</small>
+                    </div>
+                </div>
+                <!-- EO: Duration -->
+
+                <!-- Sector -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputSector" class="col-form-label ">Sector</label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputSector" name="sector"
+                            th:field=="*{sector}"
+                            th:value="*{sector}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select sector</option>
+                        <option th:each="c : ${T(com.example.incubation_planner.models.entity.enums.Sector).values()}"
+                                th:text="${c}" th:value="${c}">Value
+                        </option>
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the sector</small>
+                </div>
+
+                <!-- EO: Sector-->
+
+                <!-- Activity type -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputActivityType" class="col-form-label ">Type of Activity </label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputActivityType" name="activityType"
+                            th:field="*{activityType}"
+                            th:value="*{activityType}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select activity type</option>
+                        <option th:each="a : ${activityTypes}"
+                                th:text="${a}" th:value="${a}">Value
+                        </option>
+
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the activity type</small>
+                </div>
+                <!-- EO: Activity Type -->
+
+                <!-- Needed equipment -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputEquipment" class="col-form-label ">Needed equipment</label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputEquipment" name="neededEquipment"
+                            th:field="*{neededEquipment}"
+                            th:value="*{neededEquipment}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select the equipment you need</option>
+                        <option th:each="e : ${equipmentTypes}"
+                                th:text="${e}" th:value="${e}">Value
+                        </option>
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the equipment you need</small>
+                </div>
+
+                <!-- EO: Needed equipment-->
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-dark btn-block w-50" type="submit">Submit</button>
+                </div>
+
+            </form>
+             </div>
+    </div>
+    <!-- Footer -->
+    <footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+    </footer>
+</main>
+
+
+</body>
+</html>

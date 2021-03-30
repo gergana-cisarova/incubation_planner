@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Register</h1>
+        </section>
+    </div>
+    <!-- Text -->
+
+    <div class="d-flex justify-content-center ">
+        <div class="row g-3">
+            <form
+                    th:action="@{/users/register}"
+                    th:object="${userRegistrationBindingModel}"
+                    method="POST">
+                <!-- Username -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputUsername" class="col-form-label ">Username</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="username"
+                               th:value="*{username}"
+                               th:errorclass="is-invalid"
+                               required minlength="3" maxlength="20"
+                               type="text"
+                               id="inputUsername"
+                               class="form-control"
+                               aria-describedby="usernameHelpInline">
+                        <small id="usernameError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">Username length must be
+                            at least 3 characters and not longer than 20 characters</small>
+                        <small th:if="${userExistsError}"   id="usernameUniqueError"
+                               class="text-light form-text bg-danger rounded">Username is already occupied</small>
+
+                    </div>
+                </div>
+                <!-- EO: Username -->
+
+                <!-- First name -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputFirstName" class="col-form-label ">First Name</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="firstName"
+                               type="text"
+                               th:value="*{firstName}"
+                               id="inputFirstName"
+                               class="form-control"
+                               aria-describedby="firstNameHelpInline">
+                    </div>
+                </div>
+                <!-- EO: First name -->
+                <!-- Last name -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputLastName" class="col-form-label ">Last Name</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="lastName"
+                            th:value="*{lastName}"
+                               th:errorclass="is-invalid"
+                               required minlength="3" maxlength="20"
+                               type="text"
+                               id="inputLastName"
+                               class="form-control"
+                               aria-describedby="lastNameHelpInline">
+                        <small id="lastNameError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">Last name length must be
+                            at least 3 characters and not longer than 20 characters</small>
+                    </div>
+                </div>
+                <!-- EO: Last name -->
+                <!-- Email -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputEmail" class="col-form-label">Email</label>
+                    </div>
+                    <div class="col-auto">
+                        <input required name="email"
+                               th:value="*{email}"
+                               th:errorclass="is-invalid"
+                               type="text"
+                               id="inputEmail"
+                               class="form-control"
+                               aria-describedby="emailHelpInline">
+                        <small id="emailError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">Must be valid
+                            email</small>
+                    </div>
+                </div>
+                <!-- EO: Email -->
+
+                <!-- User type -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputUserType" class="col-form-label ">User Category </label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputUserType" name="userType"
+                            th:field="*{userType}"
+                            th:value="*{userType}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select user category</option>
+                        <option th:each="c : ${T(com.example.incubation_planner.models.entity.enums.UserType).values()}"
+                                th:text="${c}" th:value="${c}">Value
+                        </option>
+
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the user category</small>
+                </div>
+                <!-- EO: Last name -->
+
+                <!-- Sector -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputSector" class="col-form-label ">Sector</label>
+                    </div>
+                    <select class="browser-default custom-select"
+                            id="inputSector" name="sector"
+                            th:field="*{sector}"
+                            th:value="*{sector}">
+                        <option value="">Select sector</option>
+                        <option th:each="c : ${T(com.example.incubation_planner.models.entity.enums.Sector).values()}"
+                                th:text="${c}" th:value="${c}">Value
+                        </option>
+
+                    </select>
+                </div>
+                <!-- EO: Sector-->
+
+                <!-- Password -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputPassword" class="col-form-label">Password</label>
+                    </div>
+                    <div class="col-auto">
+                        <input  name="password"
+                               th:errorclass="is-invalid"
+                               required minlength="5" maxlength="20"
+                               type="password"
+                               id="inputPassword"
+                               class="form-control"
+                               aria-describedby="passwordHelpInline">
+                        <small id="passwordError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">
+                            Password length must be between 5 and 20 characters and passwords should match.
+                        </small>
+                    </div>
+                </div>
+                <!-- EO: Password -->
+
+                <!-- Password confirm -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputConfirmPassword" class="col-form-label">Confirm Password</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="confirmPassword"
+                               th:errorclass="is-invalid"
+                               type="password"
+                               required minlength="5" maxlength="20"
+                               id="inputConfirmPassword"
+                               class="form-control"
+                               aria-describedby="confirmPasswordHelpInline">
+                        <small id="confirmPasswordError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">
+                            Password length must be between 5 and 20 characters and passwords should match.
+                        </small>
+                    </div>
+                </div>
+                <!-- EO: Password confirm -->
+
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-dark btn-block w-50" type="submit">Register</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

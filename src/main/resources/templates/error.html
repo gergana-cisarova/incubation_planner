@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commons :: head">
+</head>
+
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Error</h1>
+        </section>
+    </div>
+
+    <div class="d-flex justify-content-center">
+       <p></p> <h3> Oops... something went wrong</h3>
+    </div>
+    <div class="d-flex justify-content-center">
+        <h3> We are working on it. Please try again later</h3>
+    </div>
+
+</main>
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

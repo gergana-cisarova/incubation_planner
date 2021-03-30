@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Idea Details</h1>
+        </section>
+    </div>
+    <!-- Text -->
+
+    <div class="container-fluid">
+        <p></p>
+        <table>
+            <tbody th:object="${current}">
+            <tr>
+                <td>Name</td>
+                <td th:text="*{name}"></td>
+            </tr>
+            <tr>
+                <td>Description</td>
+                <td th:text="*{description}"></td>
+            </tr>
+            <tr>
+                <td>Sector</td>
+                <td th:text="*{sector}"></td>
+            </tr>
+            <tr>
+                <td>Duration in days</td>
+                <td th:text="*{duration}"></td>
+            </tr>
+            <tr>
+                <td>ActivityType</td>
+                <td th:text="*{activityType}"></td>
+            </tr>
+            <tr>
+                <td>Needed equipment</td>
+                <td th:text="*{neededEquipment}"></td>
+            </tr>
+            <tr>
+                <td>Promoter</td>
+                <td th:text="*{promoter}"></td>
+            </tr>
+            <tr>
+                <td>Status</td>
+                <td th:text="*{status}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <p>
+
+                                    <a sec:authorize="hasRole('ROLE_ADMIN')"
+                                          th:href="@{/ideas/accept/{id}(id=*{id})}">
+                                        <button type="button">Create project</button>
+                                    </a>
+
+                                    <a sec:authorize="hasRole('ROLE_ADMIN')"
+                                          th:href="@{/ideas/delete/{id}(id=*{id})}">
+                                        <button id="delete" class="bg-danger" type="button">Delete</button>
+                                    </a>
+                    </p>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+</main>
+<script th:src="@{/js/confirm-delete.js}"></script>
+
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

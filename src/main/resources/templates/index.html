@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+
+<body>
+
+<!-- Header -->
+<header th:replace="fragments/commons :: navigation">
+</header>
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+<!-- Banner -->
+<section id="banner">
+    <section id="banner_text">
+
+    <h1>Welcome to the Fictional University Incubator</h1>
+
+    <p>Plan your innovation sessions with us!</p>
+    </section>
+</section>
+</div>
+<!-- One -->
+    <div class="container-fluid">
+
+<section id="one" class="wrapper">
+    <div class="inner">
+        <div class="flex flex-3">
+            <article>
+                <header>
+                    <h3>Browse users' ideas</h3>
+                </header>
+                <p>Our incubator is a shared space for collaboration. Users have shared ideas for innovation projects they would like to carry out in one of our labs. See te ideas and join us in our innovation activities.</p>
+                <footer>
+                    <a href="/ideas/all" class="button special">See all ideas</a>
+                </footer>
+            </article>
+            <article>
+                <header>
+                    <h3>Share your own idea</h3>
+                </header>
+                <p>Registered users of the Fictional University Incubator can publish their ideas. Valuable ideas will be launched as projects. Propose an idea and get collaborators from various fields.</p>
+                <footer>
+                    <a href="/ideas/add" class="button special">Share idea</a>
+                </footer>
+            </article>
+            <article>
+                <header>
+                    <h3>Join a project as collaborator</h3>
+                </header>
+                <p>Interested in a upcoming project? Registered users can join projects as collaborators.</p>
+                <p>Join professionals from various fields to innovate and realize new ideas!</p>
+                <footer>
+                    <a href="/projects/all" class="button special">More</a>
+                </footer>
+            </article>
+        </div>
+    </div>
+</section>
+</div>
+
+<!-- Two -->
+<section id="two" class="wrapper style1 special">
+    <div class="inner">
+        <header>
+            <h2>Our Innovation Spaces</h2>
+            <p>See the Labs that can help turn your innovation idea into a reality!</p>
+        </header>
+        <div class="flex flex-4">
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/wood_workshop.jpg" alt="Leonardo Lab" />
+                </div>
+                <h3>Leonardo Lab</h3>
+                <p>Wood workshop</p>
+            </div>
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/metal_workshop.jpg" alt="Tesla Lab" />
+                </div>
+                <h3>Tesla Lab</h3>
+                <p>Metal workshop</p>
+            </div>
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/VR.jpg" alt="Lumiere Lab" />
+                </div>
+                <h3>Lumiere Lab</h3>
+                <p>Digital and media production workshop</p>
+            </div>
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/3Dprinter.jpg" alt="Bell Lab" />
+                </div>
+                <h3>Bell Lab</h3>
+                <p>Prototyping space</p>
+            </div>
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/networking.jpg" alt="Monnet Lab" />
+                </div>
+                <h3>Monnet Lab</h3>
+                <p>Networking space </p>
+            </div>
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/collab.jpg" alt="Ideation Lab" />
+                </div>
+                <h3>Ideation Lab</h3>
+                <p>Collaboration and ideation space </p>
+            </div>
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/collab2.jpg" alt="STEM&Art Lab" />
+                </div>
+                <h3>STEM&Art Lab</h3>
+                <p>STEM and Arts collaboration space </p>
+            </div>
+            <div class="box person">
+                <div class="image round">
+                    <img src="images/collab3.jpg" alt="Carnegie Lab" />
+                </div>
+                <h3>Carnegie Lab</h3>
+                <p>Entrepreneurial learning and mentoring space</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Three -->
+<section id="three" class="wrapper special">
+    <div class="inner">
+        <header class="align-center">
+            <h2>Get inspiration!</h2>
+            <p>Learn about success stories and see the results from projects carried out in our labs.</p>
+        </header>
+        <div class="flex flex-2">
+            <article>
+                <div class="image fit">
+                    <img src="images/IT.jpg" alt="IT" />
+                </div>
+                <header>
+                    <h3>IT sector projects</h3>
+                </header>
+                <p>You can browse the published success stories and results from various completed projects in the IT sector. </p>
+                <footer>
+                    <a href="/results/it" class="button special">More</a>
+                </footer>
+            </article>
+            <article>
+                <div class="image fit">
+                    <img src="images/arts.jpg" alt="Art&Design" />
+                </div>
+                <header>
+                    <h3>Arts sector projects</h3>
+                </header>
+                <p>You can browse the published success stories and results from various completed projects in the Arts&Design sector. </p>
+                <footer>
+                    <a href="/results/arts" class="button special">More</a>
+                </footer>
+            </article>
+        </div>
+        <h1>	&nbsp;</h1>
+            <div class="flex flex-2">
+                <article>
+                <div class="image fit">
+                    <img src="images/production.jpg" alt="Production" />
+                </div>
+                <header>
+                    <h3>Production sector projects</h3>
+                </header>
+                <p>You can browse the published success stories and results from various completed projects in the production sector. </p>
+                <footer>
+                    <a href="/results/production" class="button special">More</a>
+                </footer>
+            </article>
+            <article>
+                <div class="image fit">
+                    <img src="images/education.jpg" alt="Education" />
+                </div>
+                <header>
+                    <h3>Education and training projects</h3>
+                </header>
+                <p>You can browse the published success stories and results from various completed projects in the area of Education and Training. </p>
+                <footer>
+                    <a href="/results/education" class="button special">More</a>
+                </footer>
+            </article>
+        </div>
+    </div>
+</section>
+</main>
+<!-- Footer -->
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+
+
+</body>
+</html>

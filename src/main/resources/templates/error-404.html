@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commons :: head">
+</head>
+
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Not found...</h1>
+        </section>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <p></p>
+        <h3> The requested resources could not be found...</h3>
+    </div>
+    <div class="d-flex justify-content-center">
+        <h3> Try another one</h3>
+    </div>
+
+</main>
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

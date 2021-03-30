@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Project results - Arts sector</h1>
+        </section>
+    </div>
+    <!-- Text -->
+
+    <div class="container-fluid">
+        <h2 id="content">Get inspiration!</h2>
+        <p>Learn about success stories and see the results from Arts sector projects carried out in our labs.</p>
+        <div class="row">
+            <!-- Break -->
+            <div th:each="p : ${results}" th:object="${p}" class="4u 12u$(medium)">
+                <h3 th:text="|Project: *{name}|">Interdum sapien gravida</h3>
+                <p th:text="*{result}">Nunc lacinia ante nunc ac lobortis. Interdum adipiscing gravida odio porttitor sem non mi integer non faucibus ornare mi ut ante amet placerat aliquet. Volutpat eu sed ante lacinia sapien lorem accumsan varius montes viverra nibh in adipiscing blandit tempus accumsan.</p>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

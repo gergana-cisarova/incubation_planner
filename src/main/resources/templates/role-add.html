@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Manage admin roles</h1>
+        </section>
+    </div>
+    <!-- Text -->
+
+    <div class="d-flex justify-content-center">
+        <div class="col-xl-8 col-lg-10 col-md-12 col-sm-12">
+            <div class="bg-white tm-block">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="tm-block-title d-inline-block">Add new role to user</h2>
+                    </div>
+                </div>
+                <div class="row mt-4 tm-edit-product-row">
+                    <div class="col-xl-7 col-lg-7 col-md-12">
+                        <form th:action="@{/roles/add}" method="POST" onsubmit="return validate(this)"
+                              class="tm-edit-product-form">
+                            <div class="input-group mb-3">
+                                <label for="username"
+                                       class="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-form-label">Users</label>
+                                <select required class="custom-select col-xl-9 col-lg-8 col-md-8 col-sm-7" id="username"
+                                        name="username">
+                                    <option value="" selected>Select user</option>
+
+                                    <option th:each="n : ${names}" th:text="${n}" th:value="${n}">Pesho</option>
+
+
+                                </select>
+                            </div>
+                            <div class="input-group mb-3">
+                                <label class="col-xl-4 col-lg-4 col-md-4 col-sm-5 col-form-label">Roles</label>
+                                <div>
+<!--                                    <input style="display:none" type="checkbox" id="user" name="roles" value="user" checked>-->
+<!--                                    <label for="user">User</label><br/>-->
+                                    <input type="checkbox" id="admin" name="role" value="admin">
+                                    <label for="admin">Admin</label><br/>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <div class="ml-auto col-xl-8 col-lg-8 col-md-8 col-sm-7 pl-0">
+                                    <button id="assign" type="submit" class="btn btn-dark btn-block w-50">Assign roles
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script th:src="@{/js/confirm-admin.js}"></script>
+
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

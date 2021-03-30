@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+<div class="container-fluid">
+
+
+    <section id="banner_generic">
+        <h1>Ideas</h1>
+    </section>
+</div>
+    <p></p>
+    <span class="border border-success" id="confirm" th:text="${message}"> </span>
+
+    <div class="container-fluid">
+
+                <table class="alt">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Sector</th>
+
+                        <th>Activity Type</th>
+                        <th>Status</th>
+                        <th sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="i : ${ideas}" th:object="${i}">
+                        <td th:text="*{name}"></td>
+                        <td th:text="*{sector}"></td>
+                        <td th:text="*{activityType}"></td>
+                        <td th:text="*{status}"></td>
+                        <td sec:authorize="hasRole('ROLE_ADMIN')">
+
+                            <a th:href="@{/ideas/details/{id}(id=*{id})}">
+                                <button type="button">Details</button></a>
+
+                             </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+    </div>
+
+
+
+</main>
+<script th:src="@{/js/confirmation.js}"></script>
+
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

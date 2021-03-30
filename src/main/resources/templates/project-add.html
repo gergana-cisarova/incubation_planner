@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+
+<!-- Header -->
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Create a project</h1>
+        </section>
+    </div>
+
+    <!-- Text -->
+
+    <div class="d-flex justify-content-center ">
+        <div class="row g-3">
+            <form
+                    th:object="${projectAddBindingModel}"
+                    th:action="@{/ideas/accept/{id}(id=${id})}"
+                    method="POST">
+                <!-- Name -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputName" class="col-form-label ">Name</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="name"
+                               th:field="${ideaServiceModel.name}"
+                               th:value="${projectAddBindingModel.name}"
+                               th:errorclass="is-invalid"
+                               type="text"
+                               required minlength="3" maxlength="250"
+                               id="inputName"
+                               class="form-control"
+                               aria-describedby="nameHelpInline">
+                        <small id="nameError" class="invalid-feedback text-light form-text bg-danger rounded">The name
+                            must be at least 3 characters long and not longer than 250 characters</small>
+
+                    </div>
+                </div>
+                <!-- Sector -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputSector" class="col-form-label ">Sector</label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputSector" name="sector"
+                            th:field="${ideaServiceModel.sector}"
+                            th:value="${projectAddBindingModel.sector}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select sector</option>
+                        <option th:each="c : ${T(com.example.incubation_planner.models.entity.enums.Sector).values()}"
+                                th:text="${c}" th:value="${c}">Value
+                        </option>
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the sector</small>
+                </div>
+
+                <!-- EO: Sector-->
+                <!-- Description -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputDescription" class="col-form-label ">Description</label>
+                    </div>
+                    <div class="col-auto">
+                                        <textarea name="description"
+                                                  th:field="${ideaServiceModel.description}"
+                                                  th:value="${projectAddBindingModel.description}"
+                                                  th:errorclass="is-invalid"
+                                                  required minlength="10" maxlength="1500"
+                                                  id="inputDescription"
+                                                  class="form-control"
+                                                  aria-describedby="descriptionInline">
+                                        </textarea>
+                        <small id="descriptionError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">The description must be
+                            at least 10 characters long and not longer than 1500 characters</small>
+                    </div>
+                </div>
+                <!--                                 EO: Description -->
+                <!-- Activity type -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputActivityType" class="col-form-label ">Type of Activity </label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputActivityType" name="activityType"
+                            th:field="${ideaServiceModel.activityType}"
+                            th:value="${projectAddBindingModel.activityType}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select activity type</option>
+                        <option th:each="a : ${activityTypes}"
+                                th:text="${a}" th:value="${a}">Value
+                        </option>
+
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the activity type</small>
+                </div>
+                <!--         EO: Activity Type &ndash;&gt;-->
+
+
+                <!-- Needed equipment -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputNeededEquipment" class="col-form-label ">Equipment provided</label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputNeededEquipment"
+                            name="neededEquipment"
+                            th:field="${ideaServiceModel.neededEquipment}"
+                            th:value="${projectAddBindingModel.neededEquipment}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select the equipment provided</option>
+                        <option th:each="e : ${equipmentTypes}"
+                                th:text="${e}" th:value="${e}">Value
+                        </option>
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the equipment provided</small>
+                </div>
+
+                <!-- EO: Needed equipment-->
+
+                <!-- Lab -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputLab" class="col-form-label ">Lab</label>
+                    </div>
+                    <select required class="browser-default custom-select"
+                            id="inputLab"
+                            name="lab"
+                            th:field="*{lab}"
+                            th:value="*{lab}"
+                            th:errorclass="is-invalid">
+                        <option value="">Select the Lab</option>
+                        <option th:each="l : ${labs}"
+                                th:text="${l}" th:value="${l}">Value
+                        </option>
+                    </select>
+                    <small class="invalid-feedback text-light form-text bg-danger rounded">You must
+                        select the Lab</small>
+                </div>
+                <p></p>
+                <div id="hiddenInfo">
+                    <table>
+                        <tr th:each="instance : ${labsInfo}">
+                            <td th:text="${instance.key}">Lab</td>
+                            <td th:utext="${instance.value}">Projects</td>
+                        </tr>
+                    </table>
+                </div>
+                <button type="button" id="hide">Show Lab occupancy</button>
+                <p class="text-primary"
+                   th:text="|Requested duration in days: ${duration}. Please, schedule the project in the selected lab.|"></p>
+                </p>
+
+                <!-- EO: Lab-->
+                <!--                 Starting date -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputStartDate" class="col-form-label">Starting date </label>
+                    </div>
+                    <div class="col-auto">
+                        <input required name="startDate"
+                               th:value="*{startDate}"
+                               th:errorclass="is-invalid"
+                               type="datetime-local"
+                               id="inputStartDate"
+                               class="form-control"
+                               aria-describedby="startDateHelpInline">
+                        <small id="startDateError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">The starting date cannot
+                            be in the past</small>
+                    </div>
+                </div>
+                <!-- EO: Starting Date -->
+
+                <!--                End date -->
+                <div>
+                    <div class="col-auto">
+                        <label for="inputEndDate" class="col-form-label">End date </label>
+                    </div>
+                    <div class="col-auto">
+                        <input required name="endDate"
+                               th:value="*{endDate}"
+                               th:errorclass="is-invalid"
+                               type="datetime-local"
+                               id="inputEndDate"
+                               class="form-control"
+                               aria-describedby="endDateHelpInline">
+                        <small id="endDateError"
+                               class="invalid-feedback text-light form-text bg-danger rounded">The end date must be
+                            after the starting date and both must be in the future</small>
+                    </div>
+                </div>
+                <!-- EO: End Date -->
+
+
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-dark btn-block w-50" type="submit">Submit</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+    </footer>
+</main>
+<script th:src="@{/js/show-text.js}">
+</script>
+<script>
+    window.onload = textHandler();
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Leonardo",
+    "equipment": "Wood workshop"
+  },
+  {
+    "name": "Tesla",
+    "equipment": "Metal workshop"
+  },
+  {
+    "name": "Lumiere",
+    "equipment": "Digital production workshop"
+  },
+  {
+    "name": "Bell",
+    "equipment": "Prototyping space"
+  },
+  {
+    "name": "Monnet",
+    "equipment": "Computers, Multimedia, Printers"
+  },
+  {
+    "name": "Ideation",
+    "equipment": "Computers, Multimedia, Printers"
+  },
+  {
+    "name": "STEM&Art",
+    "equipment": "Computers, Multimedia, Printers"
+  },
+  {
+    "name": "Carnegie",
+    "equipment": "Computers, Multimedia, Printers"
+  }
+]

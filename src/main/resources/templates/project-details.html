@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+        <!-- Banner -->
+        <section id="banner_generic">
+            <h1>Project Details</h1>
+        </section>
+    </div>
+    <!-- Text -->
+
+    <div class="container-fluid">
+        <p></p>
+        <span class="border border-success" id="confirm" th:text="${message}"> </span> <table>
+            <tbody th:object="${current}">
+            <tr>
+                <td>Name</td>
+                <td th:text="*{name}"></td>
+            </tr>
+            <tr>
+                <td>Description</td>
+                <td th:text="*{description}"></td>
+            </tr>
+            <tr>
+                <td>Sector</td>
+                <td th:text="*{sector}"></td>
+            </tr>
+            <tr>
+                <td>Duration</td>
+                <td th:utext="*{duration}"></td>
+            </tr>
+            <tr>
+                <td>ActivityType</td>
+                <td th:text="*{activityType}"></td>
+            </tr>
+            <tr>
+                <td>Provided equipment</td>
+                <td th:text="*{neededEquipment}"></td>
+            </tr>
+            <tr>
+                <td>Lab</td>
+                <td th:text="*{lab}"></td>
+            </tr>
+            <tr>
+                <td>Promoter</td>
+                <td th:text="*{promoter}"></td>
+            </tr>
+            <tr>
+                <td>Collaborators</td>
+                <td th:utext="*{collaborators}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <h5 th:if="${isCollaborating}"> You are a collaborator in this project!</h5>
+                    <h5 th:if="${isOwner}"> You are the project leader!</h5>
+                    <p>
+
+                        <a th:if="${isOwner}" th:href="@{/projects/publish/{id}(id=*{id})}">
+                            <button type="button">Publish results</button>
+                        </a>
+
+                        <a th:unless="${isOwner==true or isCollaborating==true}" th:href="@{/projects/join/{id}(id=*{id})}">
+                            <button type="button">Join as collaborator</button>
+                        </a>
+
+                        <a th:if="${isCollaborating}" th:href="@{/projects/leave/{id}(id=*{id})}">
+                            <button type="button">Leave project</button>
+                        </a>
+
+                        <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/projects/update/{id}(id=*{id})}">
+                            <button type="button">Update project</button>
+                        </a>
+
+                        <a sec:authorize="hasRole('ROLE_ADMIN')"
+                           th:href="@{/projects/archive/{id}(id=*{id})}">
+                            <button type="button">Archive project</button>
+                        </a>
+
+                        <a sec:authorize="hasRole('ROLE_ADMIN')"
+                           th:href="@{/projects/delete/{id}(id=*{id})}">
+                            <button id="delete" class="bg-danger" type="button">Delete project</button>
+                        </a>
+                    </p>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+</main>
+<script th:src="@{/js/confirmation.js}"></script>
+<script th:src="@{/js/confirm-delete.js}"></script>
+
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+<div class="container-fluid">
+
+    <!-- Banner -->
+    <section id="banner_generic">
+        <h1>Projects</h1>
+    </section>
+</div>
+<!-- Text -->
+
+    <div class="container-fluid">
+<p></p>
+        <table class="alt">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Sector</th>
+                <th>Start Date</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${projects}" th:object="${p}">
+                <td th:text="*{name}"></td>
+                <td th:text="*{sector}"></td>
+                <td th:text="*{startDate}"></td>
+                <td>
+                    <a th:href="@{/projects/details/{id}(id=*{id})}">
+                        <button type="button">Details</button></a>
+                    <a sec:authorize="hasRole('ROLE_ADMIN')" class="text-danger" th:href="@{/projects/archive/{id}(id=*{id})}">
+                        <button type="button">Archive</button></a>
+                    <a sec:authorize="hasRole('ROLE_ADMIN')" class="text-danger" th:href="@{/projects/delete/{id}(id=*{id})}">
+                        <button class="bg-danger" type="button">Delete</button></a>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+</main>
+
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

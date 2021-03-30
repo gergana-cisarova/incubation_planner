@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+<div class="container-fluid">
+
+    <!-- Banner -->
+    <section id="banner_generic">
+        <h1>Add Activity Type</h1>
+    </section>
+</div>
+<!-- Text -->
+
+    <div class="d-flex justify-content-center">
+        <div class="row g-3 align-items-center">
+
+            <form
+                    th:action="@{/activities/add}"
+                    method="POST"
+                    th:object="${activityTypeBindingModel}"
+                    >
+                <!-- name-->
+                <div>
+                    <div class="col-auto">
+                        <label for="activityName" class="col-form-label">Activity name</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text"
+                               name="activityName"
+                               th:value="*{activityName}"
+                               th:errorclass="is-invalid"
+                               id="activityName"
+                               class="form-control"
+                               aria-describedby="activityNameHelpInline">
+                    <small id="activityNameError"
+                           class="invalid-feedback text-light form-text bg-danger rounded">Activity name length must be
+                        at least 3 characters</small>
+                </div>
+                </div><!--EO:  name-->
+
+                <div class="d-flex justify-content-center mt-2">
+                    <button class="btn btn-dark btn-block w-50" type="submit">Add activity</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</main>
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="fragments/commons :: head">
+</head>
+<body>
+<header th:replace="fragments/commons :: navigation">
+</header>
+
+<main class="container-fluid flex-fill">
+    <div class="container-fluid">
+
+
+        <section id="banner_generic">
+            <h1>Users</h1>
+        </section>
+    </div>
+
+    <div class="container-fluid">
+
+        <table class="alt">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Full name/email</th>
+                <th>Role</th>
+                <th>Active projects</th>
+                <th>Archived projects</th>
+                <th>Active collaborations</th>
+                <th>Sector/Type</th>
+                <th sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}" th:object="${u}">
+                <td th:text="*{username}"></td>
+                <td th:utext="*{fullNameAndEmail}"></td>
+                <td th:utext="*{roles}"></td>
+                <td th:utext="*{activeProjects}"></td>
+                <td th:utext="*{archivesProjects}"></td>
+                <td th:utext="*{activeCollabs}"></td>
+                <td th:utext="*{sectorAndType}"></td>
+                <td sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a th:href="@{/users/delete/{id}(id=*{id})}">
+                        <button class="bg-danger" type="button">Delete user</button>
+                    </a>
+
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+
+</main>
+<script th:src="@{/js/confirm-delete-multiple.js}"></script>
+
+<footer th:replace="fragments/commons :: footer" class="footer bg-blur">
+</footer>
+</body>
+</html>
