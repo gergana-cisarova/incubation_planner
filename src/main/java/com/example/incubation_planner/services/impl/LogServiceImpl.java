@@ -4,6 +4,7 @@ import com.example.incubation_planner.models.entity.Idea;
 import com.example.incubation_planner.models.entity.LogEntity;
 import com.example.incubation_planner.models.entity.Project;
 import com.example.incubation_planner.models.entity.UserEntity;
+import com.example.incubation_planner.models.service.IdeaLogServiceModel;
 import com.example.incubation_planner.models.service.IdeaServiceModel;
 import com.example.incubation_planner.models.service.ProjectServiceModel;
 import com.example.incubation_planner.models.view.AddIdeaLogViewModel;
@@ -66,7 +67,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void createIdeaAddLog(String action, String ideaName) {
-        IdeaServiceModel idea = ideaService.generateIdeaServiceModel(ideaName);
+        IdeaLogServiceModel idea = ideaService.generateIdeaServiceModel(ideaName);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UserEntity userEntity = userService.findByUsername(username);

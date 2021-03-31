@@ -1,6 +1,7 @@
 package com.example.incubation_planner.services.impl;
 
 import com.example.incubation_planner.models.entity.Idea;
+import com.example.incubation_planner.models.service.IdeaLogServiceModel;
 import com.example.incubation_planner.models.service.IdeaServiceModel;
 import com.example.incubation_planner.models.view.IdeaViewModel;
 import com.example.incubation_planner.repositories.IdeaRepository;
@@ -12,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -97,9 +97,14 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
     @Override
-    public IdeaServiceModel generateIdeaServiceModel(String ideaName) {
+    public IdeaLogServiceModel generateIdeaServiceModel(String ideaName) {
         Idea idea = ideaRepository.findByName(ideaName).orElseThrow(IllegalArgumentException::new);
-        return extractIdeaModel(idea.getId());
+        IdeaLogServiceModel ideaLogServiceModel = modelMapper.map(idea, IdeaLogServiceModel.class);
+        ideaLogServiceModel.setPromoter(idea.getPromoter().getUsername())
+                .setActivityType(idea.getActivityType().getActivityName())
+                .setNeededEquipment(idea.getNeededEquipment().getEquipmentName());
+
+        return ideaLogServiceModel;
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.incubation_planner.services;
 
+import com.example.incubation_planner.models.service.IdeaLogServiceModel;
 import com.example.incubation_planner.models.service.IdeaServiceModel;
 import com.example.incubation_planner.models.view.IdeaViewModel;
 
@@ -22,5 +23,5 @@ public interface IdeaService {
 
     void deleteIdeasOfUser(String id);
 
-    IdeaServiceModel generateIdeaServiceModel(String ideaName);
+    IdeaLogServiceModel generateIdeaServiceModel(String ideaName);
 }

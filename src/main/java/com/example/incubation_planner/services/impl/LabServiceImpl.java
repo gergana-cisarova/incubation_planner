@@ -55,7 +55,6 @@ public class LabServiceImpl implements LabService {
                             Lab current = modelMapper.map(m, Lab.class);
                             current.setEquipment(equipmentService.findEquipment(m.getEquipment()));
                             current.setProjects(emptyList);
-                            System.out.println();
                             labRepository.save(current);
                         });
 
