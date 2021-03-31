@@ -42,6 +42,10 @@ public class UserController {
         return "login";
     }
 
+    @GetMapping("/expired")
+    public String sessionExpired() {
+        return "session-expired";
+    }
 
     @PostMapping("/login-error")
     public ModelAndView failedLogin(

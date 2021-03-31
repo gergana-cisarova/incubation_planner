@@ -5,7 +5,6 @@ import com.example.incubation_planner.models.binding.ProjectAddBindingModel;
 import com.example.incubation_planner.models.service.IdeaServiceModel;
 import com.example.incubation_planner.models.service.ProjectServiceModel;
 import com.example.incubation_planner.models.view.IdeaViewModel;
-import com.example.incubation_planner.models.view.ProjectDetailedViewModel;
 import com.example.incubation_planner.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -89,23 +87,23 @@ public class IdeaController {
                            BindingResult bindingResult,
                            RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal UserDetails principal) {
+        if (principal != null) {
 
+            if (bindingResult.hasErrors()) {
+                redirectAttributes.addFlashAttribute("ideaAddBindingModel", ideaAddBindingModel);
+                redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.ideaAddBindingModel", bindingResult);
+                return "redirect:add";
+            }
 
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("ideaAddBindingModel", ideaAddBindingModel);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.ideaAddBindingModel", bindingResult);
+            IdeaServiceModel ideaServiceModel = modelMapper.map(
+                    ideaAddBindingModel,
+                    IdeaServiceModel.class);
 
-            return "redirect:add";
+            ideaServiceModel.setPromoter(principal.getUsername());
+
+            ideaService.createIdea(ideaServiceModel);
+            redirectAttributes.addFlashAttribute("message", "Your idea was added");
         }
-
-        IdeaServiceModel ideaServiceModel = modelMapper.map(
-                ideaAddBindingModel,
-                IdeaServiceModel.class);
-
-        ideaServiceModel.setPromoter(principal.getUsername());
-
-        ideaService.createIdea(ideaServiceModel);
-        redirectAttributes.addFlashAttribute("message", "Your idea was added");
         return "redirect:/ideas/all";
     }
 
@@ -159,7 +157,7 @@ public class IdeaController {
     @GetMapping("/delete/{id}")
     public String deleteIdea(@PathVariable String id,
                              RedirectAttributes redirectAttributes
-                             ) {
+    ) {
         ideaService.deleteIdea(id);
         redirectAttributes.addFlashAttribute("message", "You deleted an idea");
 

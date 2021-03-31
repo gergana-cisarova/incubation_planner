@@ -7,7 +7,6 @@ import com.example.incubation_planner.models.service.ProjectServiceModel;
 import com.example.incubation_planner.models.view.ProjectDetailedViewModel;
 import com.example.incubation_planner.services.*;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.text.SimpleDateFormat;
-import java.time.*;
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 @Controller
@@ -74,13 +73,14 @@ public class ProjectController {
     @GetMapping("/owned")
     public String showOwnProjects(Model model,
                                   @AuthenticationPrincipal UserDetails principal) {
-        String firstName = (userService.findByUsername(principal.getUsername())).getFirstName();
-        String lastName = (userService.findByUsername(principal.getUsername())).getLastName();
-        String userName = (userService.findByUsername(principal.getUsername())).getUsername();
-        String fullName = String.format("%s %s", firstName, lastName);
-        model.addAttribute("fullName", fullName);
-        model.addAttribute("projectsOfUser", projectService.getUserProjectsOrderedByStartDate(userName));
-
+        if (principal != null) {
+            String firstName = (userService.findByUsername(principal.getUsername())).getFirstName();
+            String lastName = (userService.findByUsername(principal.getUsername())).getLastName();
+            String userName = (userService.findByUsername(principal.getUsername())).getUsername();
+            String fullName = String.format("%s %s", firstName, lastName);
+            model.addAttribute("fullName", fullName);
+            model.addAttribute("projectsOfUser", projectService.getUserProjectsOrderedByStartDate(userName));
+        }
         return "projects-own";
     }
 
@@ -88,14 +88,15 @@ public class ProjectController {
     public String showDetails(@PathVariable String id,
                               Model model,
                               @AuthenticationPrincipal UserDetails principal) {
-        String userName = principal.getUsername();
-        String owner = projectService.findProjectOwnerStr(id);
-        boolean isOwner = userName.equals(owner);
-        model.addAttribute("isCollaborating", projectService.checkIfCollaborating(id, userName));
-        ProjectDetailedViewModel projectViewModel = projectService.extractProjectModel(id);
-        model.addAttribute("current", projectViewModel);
-        model.addAttribute("isOwner", isOwner);
-
+        if (principal != null) {
+            String userName = principal.getUsername();
+            String owner = projectService.findProjectOwnerStr(id);
+            boolean isOwner = userName.equals(owner);
+            model.addAttribute("isCollaborating", projectService.checkIfCollaborating(id, userName));
+            ProjectDetailedViewModel projectViewModel = projectService.extractProjectModel(id);
+            model.addAttribute("current", projectViewModel);
+            model.addAttribute("isOwner", isOwner);
+        }
         return "project-details";
     }
 
@@ -110,8 +111,7 @@ public class ProjectController {
 
     @GetMapping("/delete/{id}")
     public String deleteProject(@PathVariable String id,
-                                RedirectAttributes redirectAttributes
-                                ) {
+                                RedirectAttributes redirectAttributes) {
         projectService.deleteProject(id);
 
         redirectAttributes.addFlashAttribute("message", "You deleted a project");
@@ -124,12 +124,13 @@ public class ProjectController {
                               Model model,
                               RedirectAttributes redirectAttributes,
                               @AuthenticationPrincipal UserDetails principal) {
-        String userName = principal.getUsername();
-        projectService.joinProject(id, userName);
-        model.addAttribute("id", id);
+        if (principal != null) {
+            String userName = principal.getUsername();
+            projectService.joinProject(id, userName);
+            model.addAttribute("id", id);
 
-        redirectAttributes.addFlashAttribute("message", "You are now a collaborator in the project");
-
+            redirectAttributes.addFlashAttribute("message", "You are now a collaborator in the project");
+        }
         return "redirect:/projects/details/{id}";
     }
 
@@ -138,18 +139,19 @@ public class ProjectController {
                                Model model,
                                RedirectAttributes redirectAttributes,
                                @AuthenticationPrincipal UserDetails principal) {
-        String userName = principal.getUsername();
-        projectService.leaveProject(id, userName);
-        model.addAttribute("id", id);
-
-        redirectAttributes.addFlashAttribute("message", "You are no longer a collaborator in the project");
-
+        if (principal != null) {
+            String userName = principal.getUsername();
+            projectService.leaveProject(id, userName);
+            model.addAttribute("id", id);
+            redirectAttributes.addFlashAttribute("message", "You are no longer a collaborator in the project");
+        }
         return "redirect:/projects/details/{id}";
+
     }
 
     @GetMapping("/update/{id}")
     public String updateProject(@PathVariable String id,
-                             Model model) {
+                                Model model) {
         ProjectServiceModel currentData = projectService.extractProjectServiceModel(id);
         long durationInDays = getDurationInDays(currentData);
         model.addAttribute("current", currentData);
@@ -163,10 +165,10 @@ public class ProjectController {
 
     @PostMapping("/update/{id}")
     public String updateProjectPost(@PathVariable String id,
-                                      @Valid ProjectAddBindingModel projectAddBindingModel,
-                                      BindingResult bindingResult,
-                                      RedirectAttributes redirectAttributes,
-                                      Model model) {
+                                    @Valid ProjectAddBindingModel projectAddBindingModel,
+                                    BindingResult bindingResult,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model) {
         model.addAttribute("id", id);
 
         if (bindingResult.hasErrors()) {
@@ -186,20 +188,20 @@ public class ProjectController {
 
     @GetMapping("/publish/{id}")
     public String publishProject(@PathVariable String id,
-                             Model model) {
-        ProjectResultServiceModel projectResultServiceModel=projectService.extractProjectResultServiceModel(id);
+                                 Model model) {
+        ProjectResultServiceModel projectResultServiceModel = projectService.extractProjectResultServiceModel(id);
         model.addAttribute("current", projectResultServiceModel);
         model.addAttribute("id", id);
-               return "project-publish";
+        return "project-publish";
     }
 
 
     @PostMapping("/publish/{id}")
     public String publishProjectPost(@PathVariable String id,
-                                      @Valid ProjectResultBindingModel projectResultBindingModel,
-                                      BindingResult bindingResult,
-                                      RedirectAttributes redirectAttributes,
-                                      Model model) {
+                                     @Valid ProjectResultBindingModel projectResultBindingModel,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes,
+                                     Model model) {
 
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("projectResultBindingModel", projectResultBindingModel);
@@ -215,8 +217,6 @@ public class ProjectController {
         redirectAttributes.addFlashAttribute("message", "You published the results from the project");
         return "redirect:/projects/details/{id}";
     }
-
-
 
 
     private long getDurationInDays(ProjectServiceModel projectAddBindingModel) {
