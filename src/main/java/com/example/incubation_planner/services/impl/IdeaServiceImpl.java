@@ -11,6 +11,7 @@ import com.example.incubation_planner.services.IdeaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
     @Override
+    @Transactional
     public List<IdeaViewModel> getAll() {
         return ideaRepository
                 .findAllByOrderByStatusDesc()
@@ -56,7 +58,8 @@ public class IdeaServiceImpl implements IdeaService {
     public IdeaServiceModel extractIdeaModel(String id) {
         Idea idea = ideaRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         IdeaServiceModel ideaServiceModel = modelMapper.map(idea, IdeaServiceModel.class);
-        ideaServiceModel.setPromoter(idea.getPromoter().getUsername())
+        ideaServiceModel
+                .setPromoter(idea.getPromoter().getUsername())
                 .setActivityType(idea.getActivityType().getActivityName())
                 .setNeededEquipment(idea.getNeededEquipment().getEquipmentName());
 
@@ -115,7 +118,7 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
-    private IdeaViewModel mapIdea(Idea idea) {
+     IdeaViewModel mapIdea(Idea idea) {
         IdeaViewModel ideaViewModel = modelMapper.map(idea, IdeaViewModel.class);
         UserEntity user = userRepository.findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new);
         String firstName = user.getFirstName();

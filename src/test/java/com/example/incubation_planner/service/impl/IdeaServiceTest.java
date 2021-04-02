@@ -11,11 +11,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -78,7 +81,6 @@ public class IdeaServiceTest {
         when(mockUserRepository.findByUsername(any())).thenReturn(java.util.Optional.ofNullable(user));
         current.setId("1");
         when(mockIdeaRepository.save(any())).thenReturn(current);
-        when(mockIdeaRepository.getOne(any())).thenReturn(current);
         ideaServiceModel
                 .setId("1")
                 .setName("123")
@@ -90,6 +92,14 @@ public class IdeaServiceTest {
                 .setPromoter("pesho");
 
         serviceToTest.createIdea(ideaServiceModel);
+        IdeaServiceImpl mockService = mock(IdeaServiceImpl.class);
+        mockService.createIdea(ideaServiceModel);
+        verify(mockService, times(1)).createIdea(ideaServiceModel);
+
+        ArgumentCaptor<IdeaServiceModel> valueCapture = ArgumentCaptor.forClass(IdeaServiceModel.class);
+        doNothing().when(mockService).createIdea(valueCapture.capture());
+        mockService.createIdea(ideaServiceModel);
+        Assertions.assertEquals(ideaServiceModel, valueCapture.getValue());
 
         Assertions.assertEquals(ideaServiceModel.getName(), current.getName());
         Assertions.assertEquals(ideaServiceModel.getDescription(), current.getDescription());
@@ -97,9 +107,49 @@ public class IdeaServiceTest {
         Assertions.assertEquals(ideaServiceModel.getPromoter(), current.getPromoter().getUsername());
         Assertions.assertEquals(ideaServiceModel.getNeededEquipment(), current.getNeededEquipment().getEquipmentName());
         Assertions.assertEquals(ideaServiceModel.getDuration(), current.getDuration());
+        Assertions.assertEquals(ideaServiceModel.getId(), current.getId());
+    }
 
-        Assertions.assertEquals(mockIdeaRepository.getOne("1").getName(), current.getName());
+    @Test
+    void testGetAll() {
+        Idea idea2 = new Idea();
+        idea2
+                .setName("12345")
+                .setSector(Sector.IT)
+                .setDescription("1234567890")
+                .setNeededEquipment(equipment)
+                .setDuration(2)
+                .setStatus("Accepted")
+                .setActivityType(activityType)
+                .setPromoter(user);
 
+        when(mockIdeaRepository.findAllByOrderByStatusDesc()).thenReturn(List.of(idea2, current));
+        when(mockActivityTypeRepository.findByActivityName(any())).thenReturn(java.util.Optional.ofNullable(activityType));
+        when(mockEquipmentRepository.findByEquipmentName(any())).thenReturn(java.util.Optional.ofNullable(equipment));
+        when(mockUserRepository.findByUsername(any())).thenReturn(java.util.Optional.ofNullable(user));
+
+        IdeaViewModel ideaViewModel1 = mapIdea(current);
+        IdeaViewModel ideaViewModel2 = mapIdea(idea2);
+
+        List<IdeaViewModel> result = serviceToTest.getAll();
+
+
+        Assertions.assertEquals(ideaViewModel2.getName(), result.get(0).getName());
+        Assertions.assertEquals(ideaViewModel1.getName(), result.get(1).getName());
+
+    }
+
+    @Test
+    void markIdeaAsAcceptedTest() {
+        current.setStatus("Accepted");
+        current.setId("1");
+        IdeaServiceImpl mockService = mock(IdeaServiceImpl.class);
+        mockService.markIdeaAsAccepted("1");
+        verify(mockService, times(1)).markIdeaAsAccepted(current.getId());
+        ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
+        doNothing().when(mockService).markIdeaAsAccepted(valueCapture.capture());
+        mockService.markIdeaAsAccepted(current.getId());
+        Assertions.assertEquals("1", valueCapture.getValue());
     }
 
 
@@ -109,7 +159,7 @@ public class IdeaServiceTest {
         return equipment;
     }
 
-    public ActivityType getActivityType() {
+    private ActivityType getActivityType() {
         ActivityType activityType = new ActivityType();
         activityType.setActivityName("Lecture");
         return activityType;
@@ -147,4 +197,26 @@ public class IdeaServiceTest {
         lab.setEquipment(equipment);
         return lab;
     }
+
+    private IdeaViewModel mapIdea(Idea idea) {
+        when(mockActivityTypeRepository.findByActivityName(any())).thenReturn(java.util.Optional.ofNullable(activityType));
+        when(mockEquipmentRepository.findByEquipmentName(any())).thenReturn(java.util.Optional.ofNullable(equipment));
+        when(mockUserRepository.findByUsername(any())).thenReturn(java.util.Optional.ofNullable(user));
+
+        IdeaViewModel ideaViewModel = new IdeaViewModel();
+        ideaViewModel = modelMapper.map(idea, IdeaViewModel.class);
+        ideaViewModel.setActivityType(mockActivityTypeRepository
+                .findByActivityName(idea.getActivityType().getActivityName()).orElseThrow(NullPointerException::new).getActivityName());
+        ideaViewModel.setNeededEquipment(mockEquipmentRepository
+                .findByEquipmentName(idea.getNeededEquipment().getEquipmentName()).orElseThrow(NullPointerException::new).getEquipmentName());
+        String firstName = mockUserRepository
+                .findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new).getFirstName();
+        String lastName = mockUserRepository
+                .findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new).getLastName();
+        ideaViewModel.setPromoter(String.format("%s %s", firstName, lastName));
+        ideaViewModel.setPromoter(mockUserRepository
+                .findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new).getUsername());
+        return ideaViewModel;
+    }
+
 }
