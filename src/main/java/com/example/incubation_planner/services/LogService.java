@@ -19,4 +19,6 @@ public interface LogService {
     Map<Integer, Integer> getStatsIdeasCreated();
 
     Map<Integer, Integer> getStatsJoinProjectActivity();
+
+
 }

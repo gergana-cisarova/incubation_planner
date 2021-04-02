@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "labs")
 public class Lab extends BaseEntity {
 
-    @Column(name = "lab_name", unique = true, nullable = false)
+    @Column(name = "lab_name", unique=true, nullable = false)
     private String name;
 
     @ManyToOne

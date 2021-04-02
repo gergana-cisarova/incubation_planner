@@ -1,11 +1,10 @@
 package com.example.incubation_planner.models.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "logs")
 public class LogEntity extends BaseEntity {
     @ManyToOne
     private UserEntity user;

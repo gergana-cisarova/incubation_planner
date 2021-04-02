@@ -1,10 +1,10 @@
 package com.example.incubation_planner.web;
 
-import com.example.incubation_planner.models.entity.*;
-import com.example.incubation_planner.models.entity.enums.Sector;
-import com.example.incubation_planner.models.entity.enums.UserType;
+import com.example.incubation_planner.models.entity.Equipment;
+import com.example.incubation_planner.models.entity.Lab;
 import com.example.incubation_planner.repositories.*;
 import com.example.incubation_planner.services.CarouselService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,12 +13,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.transaction.Transactional;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,6 +29,7 @@ public class IdeaControllerTest {
 
     private static final String IDEA_CONTROLLER_PREFIX = "/ideas";
     private String testIdeaId;
+    private Equipment equipment;
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,18 +46,46 @@ public class IdeaControllerTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private LogRepository logRepository;
+    @Autowired
     private CarouselService carouselService;
 
+    private IdeaTestData ideaTestData;
 
     @BeforeEach
     public void setup() {
-        this.init();
+        ideaTestData = new IdeaTestData(
+                ideaRepository,
+                activityTypeRepository,
+                equipmentRepository,
+                labRepository,
+                userRepository,
+                logRepository,
+                projectRepository
+        );
+        ideaTestData.init();
+        testIdeaId = ideaTestData.getTestIdeaId();
+        equipment = ideaTestData.getEquipment();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        ideaTestData.cleanUp();
+    }
+
+    @Test
+    void AllShouldReturnValidStatusViewModelAndModel() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(IDEA_CONTROLLER_PREFIX + "/all"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("ideas-all"))
+                .andExpect(model().attributeExists("ideas"));
     }
 
 
     @Test
     @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
-    void shouldReturnValidStatusViewModelAndModel() throws Exception {
+    void DetailsShouldReturnValidStatusViewModelAndModel() throws Exception {
+
         mockMvc.perform(MockMvcRequestBuilders.get(IDEA_CONTROLLER_PREFIX + "/details/{id}", testIdeaId))
                 .andExpect(status().isOk())
                 .andExpect(view().name("idea-details"))
@@ -67,56 +95,166 @@ public class IdeaControllerTest {
 
     @Test
     @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
-    void addIdea() throws Exception {
+    void AddShouldReturnValidStatusViewModelAndModel() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(IDEA_CONTROLLER_PREFIX + "/add"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("idea-add"))
+                .andExpect(model().attributeExists("firstImg"))
+                .andExpect(model().attributeExists("secondImg"))
+                .andExpect(model().attributeExists("thirdImg"));
+    }
+
+    @Test
+    @WithMockUser(value = "pesho", roles = {"USER", "ADMIN"})
+    void addIdeaValidInput() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/add")
-                .param("name", "Idea test1")
+                .param("name", "123")
                 .param("sector", "Arts")
-                .param("description", "description of the test idea")
-                .param("duration", "2")
-                .param("neededEquipment", "Computers")
+                .param("description", "1234567890")
+                .param("duration", "1")
+                .param("neededEquipment", "Computers_Multimedia_Printers")
                 .param("activityType", "Lecture")
-                .param("promoter", "admin")
+                .param("promoter", "pesho")
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection());
 
         Assertions.assertEquals(2, ideaRepository.count());
+        Assertions.assertEquals(1, logRepository.count());
 
     }
 
 
-    private void init() {
-        ActivityType activityType = new ActivityType();
-        activityType.setActivityName("Lecture");
-        activityTypeRepository.save(activityType);
-        Equipment equipment = new Equipment();
-        equipment.setEquipmentName("Computers");
-        equipmentRepository.save(equipment);
+    @Test
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void addIdeaInvalidInput() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/add")
+                .param("name", "12")
+                .param("sector", "")
+                .param("description", "123456789")
+                .param("duration", "0")
+                .param("neededEquipment", "")
+                .param("activityType", "")
+                .param("promoter", "admin")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.ideaAddBindingModel"));
+        Assertions.assertEquals(0, logRepository.count());
+    }
+
+
+    @Test
+    @Transactional
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void AcceptIdeaShouldReturnValidStatusViewModelAndModel() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId))
+                .andExpect(status().isOk())
+                .andExpect(view().name("project-add"))
+                .andExpect(model().attributeExists("ideaServiceModel", "labs", "duration", "labsInfo"));
+    }
+
+
+    @Test
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void AcceptIdeaPostValidInput() throws Exception {
         Lab lab = new Lab();
-        lab.setName("Monnet2");
+        lab.setName("Monnet");
         lab.setEquipment(equipment);
-        List<Project> emptyList = new ArrayList<>();
-        lab.setProjects(emptyList);
         labRepository.save(lab);
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("admin1")
-                .setPassword("123456789")
-                .setLastName("Peshov")
-                .setEmail("pesho@pesho.bg")
-                .setSector(Sector.Arts)
-                .setUserType(UserType.Company);
-        userRepository.save(userEntity);
+        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
+                .param("name", "123")
+                .param("sector", "IT")
+                .param("description", "1234567890")
+                .param("neededEquipment", "Computers_Multimedia_Printers")
+                .param("activityType", "Lecture")
+                .param("startDate", "2021-04-03T10:00")
+                .param("endDate", "2021-04-04T10:00")
+                .param("Lab", "Monnet")
+                .param("promoter", "admin")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection());
 
-        Idea idea = new Idea();
-        idea.setName("Idea test")
-                .setPromoter(userEntity)
-                .setActivityType(activityType)
-                .setDescription("description of the test idea")
-                .setNeededEquipment(equipment)
-                .setDuration(2)
-                .setSector(Sector.Arts)
-                .setStatus("pending");
-        ideaRepository.save(idea);
-        testIdeaId = idea.getId();
+        Assertions.assertEquals(1, projectRepository.count());
     }
+
+
+    @Test
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void IdeaAcceptPostInvalidDatesOnly() throws Exception {
+        Lab lab = new Lab();
+        lab.setName("Ideation");
+        lab.setEquipment(equipment);
+        labRepository.save(lab);
+
+        labRepository.save(lab);  mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
+                .param("name", "123")
+                .param("sector", "IT")
+                .param("description", "1234567890")
+                .param("neededEquipment", "Computers_Multimedia_Printers")
+                .param("activityType", "Masterclass")
+                .param("startDate", "2021-04-04T10:00")
+                .param("endDate", "2021-04-04T09:59")
+                .param("Lab", "Ideation")
+                .param("promoter", "admin")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.projectAddBindingModel"));
+
+
+        Assertions.assertEquals(0, projectRepository.count());
+    }
+
+    @Test
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void IdeaAcceptPostInvalidInput() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
+                .param("name", "12")
+                .param("sector", "")
+                .param("description", "123456789")
+                .param("neededEquipment", "")
+                .param("activityType", "")
+                .param("startDate", "")
+                .param("endDate", "")
+                .param("Lab", "")
+                .param("promoter", "admin")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.projectAddBindingModel"));
+
+        Assertions.assertEquals(0, projectRepository.count());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void DeleteIdeaReturnsValidStatusViewModelAndModel() throws Exception {
+        String ideaId = testIdeaId;
+        String url = "http://localhost:8080/ideas/delete/{ideaId}";
+        mockMvc.perform(MockMvcRequestBuilders.get(url, ideaId ))
+                .andExpect(status().isFound());
+
+        Assertions.assertEquals(0, ideaRepository.count());
+
+
+    }
+
+    @Test
+    @WithMockUser(value = "pesho", roles = {"USER", "ADMIN"})
+    void deleteIdeaValidInput() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/add")
+                .param("name", "123")
+                .param("sector", "Arts")
+                .param("description", "1234567890")
+                .param("duration", "1")
+                .param("neededEquipment", "Computers_Multimedia_Printers")
+                .param("activityType", "Lecture")
+                .param("promoter", "pesho")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection());
+
+        Assertions.assertEquals(2, ideaRepository.count());
+        Assertions.assertEquals(1, logRepository.count());
+
+    }
+
 }

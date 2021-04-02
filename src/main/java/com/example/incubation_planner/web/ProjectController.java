@@ -30,14 +30,16 @@ public class ProjectController {
     private final ProjectService projectService;
     private final LabService labService;
     private final UserService userService;
+    private final LogService logService;
 
-    public ProjectController(ModelMapper modelMapper, ActivityTypeService activityTypeService, EquipmentService equipmentService, ProjectService projectService, LabService labService, UserService userService) {
+    public ProjectController(ModelMapper modelMapper, ActivityTypeService activityTypeService, EquipmentService equipmentService, ProjectService projectService, LabService labService, UserService userService, LogService logService) {
         this.modelMapper = modelMapper;
         this.activityTypeService = activityTypeService;
         this.equipmentService = equipmentService;
         this.projectService = projectService;
         this.labService = labService;
         this.userService = userService;
+        this.logService = logService;
     }
 
     @ModelAttribute("projectAddBindingModel")
@@ -113,7 +115,6 @@ public class ProjectController {
     public String deleteProject(@PathVariable String id,
                                 RedirectAttributes redirectAttributes) {
         projectService.deleteProject(id);
-
         redirectAttributes.addFlashAttribute("message", "You deleted a project");
 
         return "redirect:/projects/all";
@@ -155,9 +156,9 @@ public class ProjectController {
         ProjectServiceModel currentData = projectService.extractProjectServiceModel(id);
         long durationInDays = getDurationInDays(currentData);
         model.addAttribute("current", currentData);
-        model.addAttribute("labs", labService.findSuitableLabs(currentData.getNeededEquipment()));
+//        model.addAttribute("labs", labService.getAllLabs());
         model.addAttribute("duration", durationInDays);
-        model.addAttribute("labsInfo", labService.getSuitableLabsWithProjects(currentData.getNeededEquipment()));
+        model.addAttribute("labsInfo", labService.getAllLabsWithProjects());
 
         return "project-update";
     }

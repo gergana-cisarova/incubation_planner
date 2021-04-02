@@ -55,12 +55,11 @@
                     </div>
                     <select required class="browser-default custom-select"
                             id="inputSector" name="sector"
-                            th:field="${ideaServiceModel.sector}"
                             th:value="${projectAddBindingModel.sector}"
                             th:errorclass="is-invalid">
                         <option value="">Select sector</option>
                         <option th:each="c : ${T(com.example.incubation_planner.models.entity.enums.Sector).values()}"
-                                th:text="${c}" th:value="${c}">Value
+                                th:text="${c}" th:value="${c}" th:selected="${c}==${projectAddBindingModel.sector}">Value
                         </option>
                     </select>
                     <small class="invalid-feedback text-light form-text bg-danger rounded">You must
@@ -96,12 +95,11 @@
                     </div>
                     <select required class="browser-default custom-select"
                             id="inputActivityType" name="activityType"
-                            th:field="${ideaServiceModel.activityType}"
                             th:value="${projectAddBindingModel.activityType}"
                             th:errorclass="is-invalid">
                         <option value="">Select activity type</option>
                         <option th:each="a : ${activityTypes}"
-                                th:text="${a}" th:value="${a}">Value
+                                th:text="${a}" th:value="${a}" th:selected="${a}==${projectAddBindingModel.activityType}">Value
                         </option>
 
                     </select>
@@ -120,11 +118,10 @@
                             id="inputNeededEquipment"
                             name="neededEquipment"
                             th:field="${ideaServiceModel.neededEquipment}"
-                            th:value="${projectAddBindingModel.neededEquipment}"
+                            th:value="${ideaServiceModel.neededEquipment}"
                             th:errorclass="is-invalid">
                         <option value="">Select the equipment provided</option>
-                        <option th:each="e : ${equipmentTypes}"
-                                th:text="${e}" th:value="${e}">Value
+                        <option th:text="${ideaServiceModel.neededEquipment}" th:value="${ideaServiceModel.neededEquipment}">Value
                         </option>
                     </select>
                     <small class="invalid-feedback text-light form-text bg-danger rounded">You must
@@ -221,6 +218,7 @@
 </main>
 <script th:src="@{/js/show-text.js}">
 </script>
+
 <script>
     window.onload = textHandler();
 </script>

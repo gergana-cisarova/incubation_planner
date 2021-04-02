@@ -1,6 +1,5 @@
 package com.example.incubation_planner.services.impl;
 
-import com.example.incubation_planner.models.binding.ProjectAddBindingModel;
 import com.example.incubation_planner.models.entity.*;
 import com.example.incubation_planner.models.entity.enums.Sector;
 import com.example.incubation_planner.models.service.ProjectResultServiceModel;
@@ -8,6 +7,9 @@ import com.example.incubation_planner.models.service.ProjectServiceModel;
 import com.example.incubation_planner.models.view.ProjectBasicViewModel;
 import com.example.incubation_planner.models.view.ProjectDetailedViewModel;
 import com.example.incubation_planner.models.view.ProjectResultViewModel;
+import com.example.incubation_planner.repositories.ActivityTypeRepository;
+import com.example.incubation_planner.repositories.EquipmentRepository;
+import com.example.incubation_planner.repositories.LogRepository;
 import com.example.incubation_planner.repositories.ProjectRepository;
 import com.example.incubation_planner.services.*;
 import org.modelmapper.ModelMapper;
@@ -19,19 +21,21 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
+    private final LogRepository logRepository;
     private final ModelMapper modelMapper;
     private final UserService userService;
-    private final ActivityTypeService activityTypeService;
+    private final ActivityTypeRepository activityTypeRepository;
     private final LabService labService;
-    private final EquipmentService equipmentService;
+    private final EquipmentRepository equipmentRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, ModelMapper modelMapper, UserService userService, ActivityTypeService activityTypeService, LabService labService, EquipmentService equipmentService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, LogRepository logRepository, ModelMapper modelMapper, UserService userService, ActivityTypeRepository activityTypeRepository, LabService labService, EquipmentRepository equipmentRepository) {
         this.projectRepository = projectRepository;
+        this.logRepository = logRepository;
         this.modelMapper = modelMapper;
         this.userService = userService;
-        this.activityTypeService = activityTypeService;
+        this.activityTypeRepository = activityTypeRepository;
         this.labService = labService;
-        this.equipmentService = equipmentService;
+        this.equipmentRepository = equipmentRepository;
     }
 
     @Override
@@ -39,9 +43,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project project = modelMapper.map(projectServiceModel, Project.class);
         project.setPromoter(userService.findByUsername(projectServiceModel.getPromoter()))
-                .setActivityType(activityTypeService.findByActivityName(projectServiceModel.getActivityType()))
+                .setActivityType(activityTypeRepository.findByActivityName(projectServiceModel.getActivityType()).orElseThrow(NullPointerException::new))
                 .setLab(labService.findLab(projectServiceModel.getLab()))
-                .setNeededEquipment(equipmentService.findEquipment(projectServiceModel.getNeededEquipment()));
+                .setNeededEquipment(equipmentRepository.findByEquipmentName(projectServiceModel.getNeededEquipment()).orElseThrow(NullPointerException::new));
 
         projectRepository.save(project);
     }
@@ -84,6 +88,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void deleteProject(String id) {
+       List<LogEntity> logs = logRepository.findByProject_Id(id);
+       if (!logs.isEmpty()) {
+           logs.forEach(l -> logRepository.delete(l));
+       }
         projectRepository.deleteById(id);
 
     }
@@ -190,12 +198,12 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.getOne(id)
                 .setName(projectServiceModel.getName())
                 .setDescription(projectServiceModel.getDescription());
-        ActivityType currentActivity = activityTypeService.findByActivityName(projectServiceModel.getActivityType());
+        ActivityType currentActivity = activityTypeRepository.findByActivityName(projectServiceModel.getActivityType()).orElseThrow(NullPointerException::new);
         project.setActivityType(currentActivity)
                 .setSector(projectServiceModel.getSector())
                 .setStartDate(projectServiceModel.getStartDate())
                 .setEndDate(projectServiceModel.getEndDate());
-        Equipment currentEquipment = equipmentService.findEquipment(projectServiceModel.getNeededEquipment());
+        Equipment currentEquipment = equipmentRepository.findByEquipmentName(projectServiceModel.getNeededEquipment()).orElseThrow(NullPointerException::new);
         project.setNeededEquipment(currentEquipment);
         Lab currentLab = labService.findLab(projectServiceModel.getLab());
         project.setLab(currentLab);

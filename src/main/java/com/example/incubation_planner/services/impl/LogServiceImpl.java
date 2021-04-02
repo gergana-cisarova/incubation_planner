@@ -68,22 +68,25 @@ public class LogServiceImpl implements LogService {
     @Override
     public void createIdeaAddLog(String action, String ideaName) {
         IdeaLogServiceModel idea = ideaService.generateIdeaServiceModel(ideaName);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        UserEntity userEntity = userService.findByUsername(username);
 
-        LogEntity logEntity = new LogEntity()
-                .setIdea(modelMapper.map(idea, Idea.class))
-                .setAction(action)
-                .setTime(LocalDateTime.now())
-                .setUser(userEntity);
-        logRepository.save(logEntity);
+if (idea!=null) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+    UserEntity userEntity = userService.findByUsername(username);
+    LogEntity logEntity = new LogEntity()
+            .setIdea(modelMapper.map(idea, Idea.class))
+            .setAction(action)
+            .setTime(LocalDateTime.now())
+            .setUser(userEntity);
+    logRepository.save(logEntity);
+}
+
     }
 
     @Override
     public List<AddIdeaLogViewModel> findAllIdeaAddLogs() {
         return logRepository
-                .findAllByIdeaNotNull()
+                .findAllByIdeaNotNullOrderByTimeDesc()
                 .stream()
                 .map(l -> {
                     AddIdeaLogViewModel addIdeaLogViewModel = modelMapper.map(l, AddIdeaLogViewModel.class);
@@ -101,7 +104,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public List<JoinProjectLogViewModel> findAllJoinProjectLogs() {
         return logRepository
-                .findAllByProjectNotNull()
+                .findAllByProjectNotNullOrderByTimeDesc()
                 .stream()
                 .map(l -> {
                     JoinProjectLogViewModel joinProjectLogViewModel = modelMapper.map(l, JoinProjectLogViewModel.class);
@@ -116,7 +119,7 @@ public class LogServiceImpl implements LogService {
                 .collect(Collectors.toList());
     }
 
-    @Scheduled(cron = "0 0 12 * * FRI")
+    @Scheduled(cron = "0 0/10 20 * * FRI")
     public void deleteLogs() {
         LOGGER.info("Deleting logs...");
         logRepository.deleteAll();
@@ -124,7 +127,7 @@ public class LogServiceImpl implements LogService {
 
     public Map<Integer, Integer> getStatsJoinProjectActivity() {
         Map<Integer, Integer> activityMap = new HashMap<>();
-        logRepository.findAllByProjectNotNull()
+        logRepository.findAllByProjectNotNullOrderByTimeDesc()
                 .forEach(l -> {
                     int dayOfWeek = l.getTime().getDayOfWeek().getValue();
                     activityMap.putIfAbsent(dayOfWeek, 0);
@@ -133,9 +136,10 @@ public class LogServiceImpl implements LogService {
         return activityMap;
     }
 
+
     public Map<Integer, Integer> getStatsIdeasCreated() {
         Map<Integer, Integer> activityMap = new HashMap<>();
-        logRepository.findAllByIdeaNotNull()
+        logRepository.findAllByIdeaNotNullOrderByTimeDesc()
                 .forEach(l -> {
                     int dayOfWeek = l.getTime().getDayOfWeek().getValue();
                     activityMap.putIfAbsent(dayOfWeek, 0);

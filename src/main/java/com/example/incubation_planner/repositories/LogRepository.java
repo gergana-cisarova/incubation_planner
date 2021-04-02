@@ -8,11 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LogRepository extends JpaRepository<LogEntity, String> {
 
-    List<LogEntity> findAllByProjectNotNull();
+    List<LogEntity> findAllByProjectNotNullOrderByTimeDesc();
 
-    List<LogEntity> findAllByIdeaNotNull();
+    List<LogEntity> findAllByIdeaNotNullOrderByTimeDesc();
+
+   List<LogEntity> findByIdea_Id(String id);
+
+    List<LogEntity> findByProject_Id(String id);
 }

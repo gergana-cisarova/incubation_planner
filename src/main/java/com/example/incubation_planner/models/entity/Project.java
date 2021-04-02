@@ -14,7 +14,6 @@ import java.util.Set;
 @Table(name = "projects")
 public class Project extends BaseEntity {
 
-
     @Column(nullable = false)
     private String name;
 

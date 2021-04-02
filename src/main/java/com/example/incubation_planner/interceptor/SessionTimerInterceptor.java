@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 @Component
 public class SessionTimerInterceptor implements HandlerInterceptor {
     private HttpSession session;
-    private static final long MAX_INACTIVE_SESSION_TIME = 500 * 1000;
+    private static final long MAX_INACTIVE_SESSION_TIME = 250 * 1000;
     private Logger LOGGER = LoggerFactory.getLogger(SessionTimerInterceptor.class);
 
     public SessionTimerInterceptor(HttpSession session) {
@@ -23,7 +23,7 @@ public class SessionTimerInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        LOGGER.info("Pre handle method session timer - checking start time");
+        LOGGER.info("Pre handle method session timer - checking session start time");
         long startTime = System.currentTimeMillis();
         request.setAttribute("executionTime", startTime);
 
@@ -32,7 +32,7 @@ public class SessionTimerInterceptor implements HandlerInterceptor {
 
             if (System.currentTimeMillis() - session.getLastAccessedTime()
                     > MAX_INACTIVE_SESSION_TIME) {
-                LOGGER.warn("Logging out, due to inactive session");
+                LOGGER.warn("Logging out due to inactive session");
                 SecurityContextHolder.clearContext();
                 request.logout();
                 response.addHeader("Inactive-Session-Header", "Value-Inactive");

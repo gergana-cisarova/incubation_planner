@@ -28,8 +28,9 @@ public class IdeaController {
     private final EquipmentService equipmentService;
     private final ProjectService projectService;
     private final LabService labService;
+    private final LogService logService;
 
-    public IdeaController(CarouselService carouselService, ModelMapper modelMapper, IdeaService ideaService, ActivityTypeService activityTypeService, EquipmentService equipmentService, ProjectService projectService, LabService labService) {
+    public IdeaController(CarouselService carouselService, ModelMapper modelMapper, IdeaService ideaService, ActivityTypeService activityTypeService, EquipmentService equipmentService, ProjectService projectService, LabService labService, LogService logService) {
         this.carouselService = carouselService;
         this.modelMapper = modelMapper;
         this.ideaService = ideaService;
@@ -37,6 +38,7 @@ public class IdeaController {
         this.equipmentService = equipmentService;
         this.projectService = projectService;
         this.labService = labService;
+        this.logService = logService;
     }
 
     @ModelAttribute("ideaAddBindingModel")

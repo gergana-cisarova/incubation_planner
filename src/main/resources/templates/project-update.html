@@ -43,7 +43,8 @@
                                 id="inputName"
                                 class="form-control"
                                 aria-describedby="nameHelpInline">
-                        <p class="text-primary" th:text="|Previous name: ${current.name}|"></p>
+                        <p class="text-primary" >Previous name</p>
+                        <p class="text-primary" th:text="${current.name}"></p>
                         <small id="nameError" class="invalid-feedback text-light form-text bg-danger rounded">The name
                             must be at least 3 characters long and not longer than 250 characters</small>
 
@@ -56,12 +57,12 @@
                     </div>
                     <select required class="browser-default custom-select"
                             id="inputSector" name="sector"
-                            th:field="${current.sector}"
                             th:value="${projectAddBindingModel.sector}"
                             th:errorclass="is-invalid">
                         <option value="">Select sector</option>
                         <option th:each="c : ${T(com.example.incubation_planner.models.entity.enums.Sector).values()}"
-                                th:text="${c}" th:value="${c}">Value
+                                th:text="${c}" th:value="${c}" th:selected="${c}==${projectAddBindingModel.sector}">
+                            Value
                         </option>
                     </select>
                     <small class="invalid-feedback text-light form-text bg-danger rounded">You must
@@ -84,7 +85,8 @@
                                                   class="form-control"
                                                   aria-describedby="descriptionInline">
                                         </textarea>
-                        <p class="text-primary" th:text="|Previous description: ${current.description}|"></p>
+                        <p class="text-primary">Previous description</p>
+                        <p class="text-primary" th:text="${current.description}"></p>
                         <small id="descriptionError"
                                class="invalid-feedback text-light form-text bg-danger rounded">The description must be
                             at least 10 characters long and not longer than 1500 characters</small>
@@ -103,7 +105,8 @@
                             th:errorclass="is-invalid">
                         <option value="">Select activity type</option>
                         <option th:each="a : ${activityTypes}"
-                                th:text="${a}" th:value="${a}">Value
+                                th:text="${a}" th:value="${a}"
+                                th:selected="${a}==${projectAddBindingModel.activityType}">Value
                         </option>
 
                     </select>
@@ -111,7 +114,8 @@
                         select the activity type</small>
                 </div>
                 <!--         EO: Activity Type &ndash;&gt;-->
-
+                <p></p>
+                <p></p>
 
                 <!-- Needed equipment -->
                 <div>
@@ -121,15 +125,15 @@
                     <select required class="browser-default custom-select"
                             id="inputNeededEquipment"
                             name="neededEquipment"
-                            th:field="${current.neededEquipment}"
+
                             th:value="${projectAddBindingModel.neededEquipment}"
                             th:errorclass="is-invalid">
-                        <option value="">Select the equipment provided</option>
-                        <option th:text="${current.neededEquipment}" th:value="${current.neededEquipment}">Value
-                        </option>
+                        <!--                        <option value="">Select the equipment provided</option>-->
+                        <!--                        <option th:text="${current.neededEquipment}" th:value="${current.neededEquipment}" >Value-->
+                        <!--                        </option>-->
                     </select>
-                    <p class="text-primary">
-                        The initially reserved equipment cannot be changed. Please submit another project idea!
+                    <p class="text-primary"
+                       th:text="|Initially reserved equipment: ${current.neededEquipment}|">
                     </p>
                     <small class="invalid-feedback text-light form-text bg-danger rounded">You must
                         select the equipment provided</small>
@@ -148,10 +152,10 @@
                             name="lab"
                             th:value="*{lab}"
                             th:errorclass="is-invalid">
-                        <option value="">Select the Lab</option>
-                        <option th:each="l : ${labs}"
-                                th:text="${l}" th:value="${l}">Value
-                        </option>
+                        <!--                        <option value="">Select the Lab</option>-->
+                        <!--                        <option th:each="l : ${labs}"-->
+                        <!--                                th:text="${l}" th:value="${l}" th:selected="${l}==${projectAddBindingModel.lab}" >Value-->
+                        <!--                        </option>-->
                     </select>
                     <p class="text-primary"
                        th:text="|Initially chosen lab: ${current.lab}|"></p>
@@ -227,10 +231,13 @@
     <footer th:replace="fragments/commons :: footer" class="footer bg-blur">
     </footer>
 </main>
+
 <script src="/js/show-text.js">
 </script>
 <script>
     window.onload = textHandler();
+</script>
+<script src="/js/drop-down.js">
 </script>
 </body>
 </html>

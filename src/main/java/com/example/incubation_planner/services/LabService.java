@@ -16,5 +16,7 @@ public interface LabService {
     Lab findLab(String labName);
 
     Map<String, String> getSuitableLabsWithProjects(String neededEquipment);
+
+    Map<String, String> getAllLabsWithProjects();
 }
 

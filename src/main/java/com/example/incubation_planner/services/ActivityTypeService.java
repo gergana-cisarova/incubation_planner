@@ -11,7 +11,5 @@ public interface ActivityTypeService {
 
     void addNewActivity(ActivityTypeServiceModel activityTypeServiceModel);
 
-    ActivityType findByActivityName(String activityName);
-
     List<String> getAllActivities();
 }

@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,10 +61,6 @@ public class ActivityTypeServiceImpl implements ActivityTypeService {
         activityTypeRepository.save(modelMapper.map(activityTypeServiceModel, ActivityType.class));
     }
 
-    @Override
-    public ActivityType findByActivityName(String activityName) {
-        return activityTypeRepository.findByActivityName(activityName).orElseThrow(IllegalArgumentException::new);
-    }
 
     @Override
     public List<String> getAllActivities() {

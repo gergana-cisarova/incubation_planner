@@ -93,12 +93,11 @@ public class LabServiceImpl implements LabService {
                 .findAllByEquipment_EquipmentName(neededEquipment);
 
         labs
-                .stream()
                 .forEach(l -> {
                     List<Project> projects = l.getProjects();
                     projects.sort((p1,p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
                     StringBuilder sb = new StringBuilder();
-                    projects.stream().forEach(p -> {
+                    projects.forEach(p -> {
                         if(p.getEndDate().isAfter(LocalDateTime.now())) {
                             String currentProject =
                                     String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
@@ -111,6 +110,29 @@ public class LabServiceImpl implements LabService {
 
         return info;
     }
+
+    @Override
+    public Map<String, String> getAllLabsWithProjects() {
+        Map<String, String> info = new TreeMap<>();
+        List<Lab> labs = labRepository
+                .findAll();
+        labs
+                .forEach(l -> {
+                    List<Project> projects = l.getProjects();
+                    projects.sort((p1,p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+                    StringBuilder sb = new StringBuilder();
+                    projects.forEach(p -> {
+                        if(p.getEndDate().isAfter(LocalDateTime.now())) {
+                            String currentProject =
+                                    String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
+                                            p.getStartDate().getDayOfMonth(), p.getStartDate().getMonth(), p.getStartDate().getYear(), p.getStartDate().getHour(), p.getStartDate().getMinute(),
+                                            p.getEndDate().getDayOfMonth(), p.getEndDate().getMonth(), p.getEndDate().getYear(), p.getEndDate().getHour(), p.getEndDate().getMinute());
+                            sb.append(currentProject);
+                        }});
+                    info.put(l.getName(), sb.toString());
+                });
+
+        return info;    }
 
 }
 

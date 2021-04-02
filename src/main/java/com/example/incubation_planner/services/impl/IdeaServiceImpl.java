@@ -1,14 +1,13 @@
 package com.example.incubation_planner.services.impl;
 
 import com.example.incubation_planner.models.entity.Idea;
+import com.example.incubation_planner.models.entity.LogEntity;
+import com.example.incubation_planner.models.entity.UserEntity;
 import com.example.incubation_planner.models.service.IdeaLogServiceModel;
 import com.example.incubation_planner.models.service.IdeaServiceModel;
 import com.example.incubation_planner.models.view.IdeaViewModel;
-import com.example.incubation_planner.repositories.IdeaRepository;
-import com.example.incubation_planner.services.ActivityTypeService;
-import com.example.incubation_planner.services.EquipmentService;
+import com.example.incubation_planner.repositories.*;
 import com.example.incubation_planner.services.IdeaService;
-import com.example.incubation_planner.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -20,24 +19,26 @@ public class IdeaServiceImpl implements IdeaService {
 
     private final IdeaRepository ideaRepository;
     private final ModelMapper modelMapper;
-    private final UserService userService;
-    private final ActivityTypeService activityTypeService;
-    private final EquipmentService equipmentService;
+    private final UserRepository userRepository;
+    private final ActivityTypeRepository activityTypeRepository;
+    private final LogRepository logRepository;
+    private final EquipmentRepository equipmentRepository;
 
-    public IdeaServiceImpl(IdeaRepository ideaRepository, ModelMapper modelMapper, UserService userService, ActivityTypeService activityTypeService, EquipmentService equipmentService) {
+    public IdeaServiceImpl(IdeaRepository ideaRepository, ModelMapper modelMapper, UserRepository userRepository, ActivityTypeRepository activityTypeRepository, LogRepository logRepository, EquipmentRepository equipmentRepository) {
         this.ideaRepository = ideaRepository;
         this.modelMapper = modelMapper;
-        this.userService = userService;
-        this.activityTypeService = activityTypeService;
-        this.equipmentService = equipmentService;
+        this.userRepository = userRepository;
+        this.logRepository = logRepository;
+        this.equipmentRepository = equipmentRepository;
+        this.activityTypeRepository = activityTypeRepository;
     }
 
     @Override
     public void createIdea(IdeaServiceModel ideaServiceModel) {
         Idea idea = modelMapper.map(ideaServiceModel, Idea.class);
-        idea.setActivityType(activityTypeService.findByActivityName(ideaServiceModel.getActivityType()));
-        idea.setNeededEquipment(equipmentService.findEquipment(ideaServiceModel.getNeededEquipment()));
-        idea.setPromoter(userService.findByUsername(ideaServiceModel.getPromoter()));
+        idea.setActivityType(activityTypeRepository.findByActivityName(ideaServiceModel.getActivityType()).orElseThrow(NullPointerException::new));
+        idea.setNeededEquipment(equipmentRepository.findByEquipmentName(ideaServiceModel.getNeededEquipment()).orElseThrow(NullPointerException::new));
+        idea.setPromoter(userRepository.findByUsername(ideaServiceModel.getPromoter()).orElseThrow(NullPointerException::new));
 
         ideaRepository.save(idea);
     }
@@ -64,6 +65,10 @@ public class IdeaServiceImpl implements IdeaService {
 
     @Override
     public void deleteIdea(String id) {
+        List<LogEntity> logs = logRepository.findByIdea_Id(id);
+        if (!logs.isEmpty()) {
+            logs.forEach(l -> logRepository.delete(l));
+        }
         ideaRepository.deleteById(id);
     }
 
@@ -98,20 +103,23 @@ public class IdeaServiceImpl implements IdeaService {
 
     @Override
     public IdeaLogServiceModel generateIdeaServiceModel(String ideaName) {
-        Idea idea = ideaRepository.findByName(ideaName).orElseThrow(IllegalArgumentException::new);
-        IdeaLogServiceModel ideaLogServiceModel = modelMapper.map(idea, IdeaLogServiceModel.class);
-        ideaLogServiceModel.setPromoter(idea.getPromoter().getUsername())
-                .setActivityType(idea.getActivityType().getActivityName())
-                .setNeededEquipment(idea.getNeededEquipment().getEquipmentName());
-
-        return ideaLogServiceModel;
+        Idea idea = ideaRepository.findByName(ideaName).orElse(null);
+        if (idea!=null) {
+            IdeaLogServiceModel ideaLogServiceModel = modelMapper.map(idea, IdeaLogServiceModel.class);
+            ideaLogServiceModel.setPromoter(idea.getPromoter().getUsername())
+                    .setActivityType(idea.getActivityType().getActivityName())
+                    .setNeededEquipment(idea.getNeededEquipment().getEquipmentName());
+            return ideaLogServiceModel;
+        }
+        return null;
     }
 
 
     private IdeaViewModel mapIdea(Idea idea) {
         IdeaViewModel ideaViewModel = modelMapper.map(idea, IdeaViewModel.class);
-        String firstName = userService.findByUsername(idea.getPromoter().getUsername()).getFirstName();
-        String lastName = userService.findByUsername(idea.getPromoter().getUsername()).getLastName();
+        UserEntity user = userRepository.findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new);
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
         ideaViewModel.setPromoter(String.format("%s %s", firstName, lastName))
                 .setActivityType(idea.getActivityType().getActivityName())
                 .setNeededEquipment(idea.getNeededEquipment().getEquipmentName());
