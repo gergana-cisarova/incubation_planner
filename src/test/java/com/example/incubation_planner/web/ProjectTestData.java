@@ -6,65 +6,73 @@ import com.example.incubation_planner.models.entity.enums.UserType;
 import com.example.incubation_planner.repositories.*;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
-public class IdeaTestData {
+public class ProjectTestData {
 
-    private String testIdeaId;
+    private String projectId;
     private Equipment equipment;
+    private ActivityType activityType;
+    private Lab lab;
 
-    private IdeaRepository ideaRepository;
     private ActivityTypeRepository activityTypeRepository;
     private EquipmentRepository equipmentRepository;
+    private ProjectRepository projectRepository;
     private LabRepository labRepository;
     private UserRepository userRepository;
     private LogRepository logRepository;
-    private ProjectRepository projectRepository;
 
-    public IdeaTestData(IdeaRepository ideaRepository, ActivityTypeRepository activityTypeRepository, EquipmentRepository equipmentRepository, LabRepository labRepository, UserRepository userRepository, LogRepository logRepository, ProjectRepository projectRepository) {
-        this.ideaRepository = ideaRepository;
+    public ProjectTestData(ActivityTypeRepository activityTypeRepository, EquipmentRepository equipmentRepository, ProjectRepository projectRepository, LabRepository labRepository, UserRepository userRepository, LogRepository logRepository) {
         this.activityTypeRepository = activityTypeRepository;
         this.equipmentRepository = equipmentRepository;
+        this.projectRepository = projectRepository;
         this.labRepository = labRepository;
         this.userRepository = userRepository;
         this.logRepository = logRepository;
-        this.projectRepository = projectRepository;
     }
 
     @Transactional
     public void init() {
-        ActivityType activityType = new ActivityType();
+        activityType = new ActivityType();
         activityType.setActivityName("Lecture");
         activityTypeRepository.save(activityType);
         equipment = new Equipment();
         equipment.setEquipmentName("Computers_Multimedia_Printers");
         equipmentRepository.saveAndFlush(equipment);
+        Lab lab = new Lab();
+        lab
+                .setName("Tesla1")
+                .setEquipment(equipment);
+        labRepository.saveAndFlush(lab);
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("pesho")
+        UserEntity user = new UserEntity();
+        user.setUsername("pesho")
                 .setPassword("123456789")
                 .setLastName("Peshov")
                 .setEmail("pesho@pesho.bg")
                 .setSector(Sector.Arts)
                 .setUserType(UserType.Company);
-        userRepository.save(userEntity);
+        userRepository.save(user);
 
-        Idea idea = new Idea();
-        idea.setName("Idea test")
-                .setPromoter(userEntity)
+        Project project = new Project();
+        project
+                .setName("123")
+                .setPromoter(user)
                 .setActivityType(activityType)
-                .setDescription("description of the test idea")
+                .setDescription("1234567890")
                 .setNeededEquipment(equipment)
-                .setDuration(2)
                 .setSector(Sector.Arts)
-                .setStatus("pending");
-        ideaRepository.save(idea);
-        testIdeaId = idea.getId();
+                .setLab(lab)
+                .setStartDate(LocalDateTime.of(2021, 4, 16, 10, 0))
+                .setEndDate(LocalDateTime.of(2021, 4, 17, 10, 0));
+
+        projectRepository.save(project);
+        projectId = project.getId();
 
     }
 
     void cleanUp() {
         logRepository.deleteAll();
-        ideaRepository.deleteAll();
         projectRepository.deleteAll();
         activityTypeRepository.deleteAll();
         userRepository.deleteAll();
@@ -72,12 +80,17 @@ public class IdeaTestData {
         equipmentRepository.deleteAll();
     }
 
-    public String getTestIdeaId() {
-        return testIdeaId;
+    public String getProjectId() {
+        return projectId;
     }
 
     public Equipment getEquipment() {
         return equipment;
     }
+
+    public Lab getLab() {
+        return lab;
+    }
+
 }
 

@@ -118,7 +118,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void deleteProjectsOfUser(String id) {
-        projectRepository.findAllByPromoterId(id).forEach(p -> projectRepository.deleteById(p.getId()));
+
+        projectRepository.findAllByPromoterId(id).forEach(p -> deleteProject(p.getId()));
     }
 
     @Override

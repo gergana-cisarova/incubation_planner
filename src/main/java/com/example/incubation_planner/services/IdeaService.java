@@ -7,21 +7,22 @@ import com.example.incubation_planner.models.view.IdeaViewModel;
 import java.util.List;
 
 public interface IdeaService {
-    void createIdea(IdeaServiceModel ideaServiceModel);
+
+    IdeaViewModel createIdea(IdeaServiceModel ideaServiceModel);
 
     List<IdeaViewModel> getAll();
 
     IdeaServiceModel extractIdeaModel(String id);
 
-    void deleteIdea(String id);
+    List<String> deleteIdea(String id);
 
-    void markIdeaAsAccepted(String id);
+    boolean markIdeaAsAccepted(String id);
 
     int getDurationOfIdea(String id);
 
     IdeaViewModel getIdeaView(String id);
 
-    void deleteIdeasOfUser(String id);
+    List<String> deleteIdeasOfUser(String id);
 
     IdeaLogServiceModel generateIdeaServiceModel(String ideaName);
 }

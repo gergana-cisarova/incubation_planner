@@ -17,7 +17,9 @@ public interface LogRepository extends JpaRepository<LogEntity, String> {
 
     List<LogEntity> findAllByIdeaNotNullOrderByTimeDesc();
 
-   List<LogEntity> findByIdea_Id(String id);
+    List<LogEntity> findByIdea_Id(String id);
 
     List<LogEntity> findByProject_Id(String id);
+
+    List<LogEntity> findByUser_Id(String id);
 }

@@ -1,17 +1,13 @@
 package com.example.incubation_planner.services.impl;
 
-import com.example.incubation_planner.models.entity.Idea;
-import com.example.incubation_planner.models.entity.Project;
-import com.example.incubation_planner.models.entity.UserEntity;
-import com.example.incubation_planner.models.entity.UserRoleEntity;
+import com.example.incubation_planner.models.entity.*;
 import com.example.incubation_planner.models.entity.enums.UserRole;
 import com.example.incubation_planner.models.entity.enums.UserType;
 import com.example.incubation_planner.models.service.UserRegistrationServiceModel;
 import com.example.incubation_planner.models.view.UserViewModel;
+import com.example.incubation_planner.repositories.LogRepository;
 import com.example.incubation_planner.repositories.UserRepository;
 import com.example.incubation_planner.repositories.UserRoleRepository;
-import com.example.incubation_planner.services.IdeaService;
-import com.example.incubation_planner.services.ProjectService;
 import com.example.incubation_planner.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PostFilter;
@@ -23,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,13 +31,15 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final IncubationUserService incubationUserService;
+    private final LogRepository logRepository;
 
-    public UserServiceImpl(UserRoleRepository userRoleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, IncubationUserService incubationUserService) {
+    public UserServiceImpl(UserRoleRepository userRoleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, IncubationUserService incubationUserService, LogRepository logRepository) {
         this.userRoleRepository = userRoleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
         this.incubationUserService = incubationUserService;
+        this.logRepository = logRepository;
     }
 
     @Override
@@ -156,6 +153,10 @@ public class UserServiceImpl implements UserService {
 
         UserEntity user = userRepository.getOne(id);
         user.getProjects().stream().forEach(p -> p.getCollaborators().remove(user));
+        List<LogEntity> logs = logRepository.findByUser_Id(id);
+        if (!logs.isEmpty()) {
+            logs.forEach(l -> logRepository.delete(l));
+        }
         userRepository.deleteById(id);
     }
 

@@ -30,6 +30,7 @@ public class IdeaControllerTest {
     private static final String IDEA_CONTROLLER_PREFIX = "/ideas";
     private String testIdeaId;
     private Equipment equipment;
+    private IdeaTestData ideaTestData;
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +51,6 @@ public class IdeaControllerTest {
     @Autowired
     private CarouselService carouselService;
 
-    private IdeaTestData ideaTestData;
 
     @BeforeEach
     public void setup() {
@@ -74,7 +74,7 @@ public class IdeaControllerTest {
     }
 
     @Test
-    void AllShouldReturnValidStatusViewModelAndModel() throws Exception {
+    void IdeasAllShouldReturnValidStatusViewModelAndModel() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(IDEA_CONTROLLER_PREFIX + "/all"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("ideas-all"))
@@ -84,7 +84,7 @@ public class IdeaControllerTest {
 
     @Test
     @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
-    void DetailsShouldReturnValidStatusViewModelAndModel() throws Exception {
+    void IdeaDetailsShouldReturnValidStatusViewModelAndModel() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get(IDEA_CONTROLLER_PREFIX + "/details/{id}", testIdeaId))
                 .andExpect(status().isOk())
@@ -156,10 +156,6 @@ public class IdeaControllerTest {
     @Test
     @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
     void AcceptIdeaPostValidInput() throws Exception {
-        Lab lab = new Lab();
-        lab.setName("Monnet");
-        lab.setEquipment(equipment);
-        labRepository.save(lab);
 
         mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
                 .param("name", "123")
