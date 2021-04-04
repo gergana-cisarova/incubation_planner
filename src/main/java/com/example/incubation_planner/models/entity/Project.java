@@ -60,6 +60,9 @@ public class Project extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name="user_id", referencedColumnName="id"))
     private Set<UserEntity> collaborators = new HashSet<>();
 
+    public Project() {
+    }
+
     public String getName() {
         return name;
     }

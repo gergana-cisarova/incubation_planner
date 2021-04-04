@@ -105,24 +105,29 @@ public class IdeaControllerTest {
     }
 
     @Test
-    @WithMockUser(value = "pesho", roles = {"USER", "ADMIN"})
-    void addIdeaValidInput() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/add")
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void AcceptIdeaPostValidInput() throws Exception {
+        Lab lab = new Lab();
+        lab.setEquipment(equipment).setName("Monnet2");
+        labRepository.saveAndFlush(lab);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
                 .param("name", "123")
-                .param("sector", "Arts")
+                .param("sector", "IT")
                 .param("description", "1234567890")
-                .param("duration", "1")
                 .param("neededEquipment", "Computers_Multimedia_Printers")
                 .param("activityType", "Lecture")
-                .param("promoter", "pesho")
+                .param("startDate", "2021-05-03T10:00")
+                .param("endDate", "2021-05-04T10:00")
+                .param("lab", "Monnet2")
+                .param("promoter", "admin")
                 .with(csrf()))
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attribute("message", "You created a project"))
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/ideas/all"));
 
-        Assertions.assertEquals(2, ideaRepository.count());
-        Assertions.assertEquals(1, logRepository.count());
-
+        Assertions.assertEquals(1, projectRepository.count());
     }
-
 
     @Test
     @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
@@ -137,7 +142,8 @@ public class IdeaControllerTest {
                 .param("promoter", "admin")
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.ideaAddBindingModel"));
+                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.ideaAddBindingModel"))
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/ideas/add"));
         Assertions.assertEquals(0, logRepository.count());
     }
 
@@ -155,54 +161,14 @@ public class IdeaControllerTest {
 
     @Test
     @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
-    void AcceptIdeaPostValidInput() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
-                .param("name", "123")
-                .param("sector", "IT")
-                .param("description", "1234567890")
-                .param("neededEquipment", "Computers_Multimedia_Printers")
-                .param("activityType", "Lecture")
-                .param("startDate", "2021-04-03T10:00")
-                .param("endDate", "2021-04-04T10:00")
-                .param("Lab", "Monnet")
-                .param("promoter", "admin")
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection());
-
-        Assertions.assertEquals(1, projectRepository.count());
-    }
-
-
-    @Test
-    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
-    void IdeaAcceptPostInvalidDatesOnly() throws Exception {
+    void IdeaAcceptPostInvalidInput() throws Exception {
         Lab lab = new Lab();
-        lab.setName("Ideation");
+        lab.setName("Ideation1");
         lab.setEquipment(equipment);
         labRepository.save(lab);
 
-        labRepository.save(lab);  mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
-                .param("name", "123")
-                .param("sector", "IT")
-                .param("description", "1234567890")
-                .param("neededEquipment", "Computers_Multimedia_Printers")
-                .param("activityType", "Masterclass")
-                .param("startDate", "2021-04-04T10:00")
-                .param("endDate", "2021-04-04T09:59")
-                .param("Lab", "Ideation")
-                .param("promoter", "admin")
-                .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.projectAddBindingModel"));
+        String redirectUrl = String.format("/ideas/accept/%s", testIdeaId);
 
-
-        Assertions.assertEquals(0, projectRepository.count());
-    }
-
-    @Test
-    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
-    void IdeaAcceptPostInvalidInput() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
                 .param("name", "12")
                 .param("sector", "")
@@ -211,32 +177,54 @@ public class IdeaControllerTest {
                 .param("activityType", "")
                 .param("startDate", "")
                 .param("endDate", "")
-                .param("Lab", "")
+                .param("lab", "")
                 .param("promoter", "admin")
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.projectAddBindingModel"));
+                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.projectAddBindingModel"))
+                .andExpect(MockMvcResultMatchers.redirectedUrl(redirectUrl));
 
         Assertions.assertEquals(0, projectRepository.count());
     }
 
     @Test
-    @Transactional
     @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
-    void DeleteIdeaReturnsValidStatusViewModelAndModel() throws Exception {
-        String ideaId = testIdeaId;
-        String url = "http://localhost:8080/ideas/delete/{ideaId}";
-        mockMvc.perform(MockMvcRequestBuilders.get(url, ideaId ))
-                .andExpect(status().isFound());
+    void IdeaAcceptPostInvalidDatesOnly() throws Exception {
+        Lab lab = new Lab();
+        lab.setName("Ideation1");
+        lab.setEquipment(equipment);
+        labRepository.save(lab);
 
-        Assertions.assertEquals(0, ideaRepository.count());
+        String redirectUrl = String.format("/ideas/accept/%s", testIdeaId);
 
+        mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/accept/{id}", testIdeaId)
+                .param("name", "123")
+                .param("sector", "IT")
+                .param("description", "1234567890")
+                .param("neededEquipment", "Computers_Multimedia_Printers")
+                .param("activityType", "Masterclass")
+                .param("startDate", "2021-04-04T10:00")
+                .param("endDate", "2021-04-04T09:59")
+                .param("lab", "Ideation")
+                .param("promoter", "admin")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attributeExists("org.springframework.validation.BindingResult.projectAddBindingModel"))
+                .andExpect(MockMvcResultMatchers.redirectedUrl(redirectUrl));
 
+        Assertions.assertEquals(0, projectRepository.count());
     }
+
 
     @Test
     @WithMockUser(value = "pesho", roles = {"USER", "ADMIN"})
-    void deleteIdeaValidInput() throws Exception {
+
+    void addIdeaValidInput() throws Exception {
+        Lab lab = new Lab();
+        lab.setName("Ideation1");
+        lab.setEquipment(equipment);
+        labRepository.save(lab);
+
         mockMvc.perform(MockMvcRequestBuilders.post(IDEA_CONTROLLER_PREFIX + "/add")
                 .param("name", "123")
                 .param("sector", "Arts")
@@ -246,11 +234,24 @@ public class IdeaControllerTest {
                 .param("activityType", "Lecture")
                 .param("promoter", "pesho")
                 .with(csrf()))
-                .andExpect(status().is3xxRedirection());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attribute("message", "Your idea was added"))
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/ideas/all"));
 
         Assertions.assertEquals(2, ideaRepository.count());
         Assertions.assertEquals(1, logRepository.count());
 
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(value = "admin", roles = {"USER", "ADMIN"})
+    void DeleteIdeaReturnsValidStatus() throws Exception {
+        String url = "http://localhost:8080/ideas/delete/{testIdeaId}";
+        mockMvc.perform(MockMvcRequestBuilders.get(url, testIdeaId))
+                .andExpect(status().isFound());
+
+        Assertions.assertEquals(0, ideaRepository.count());
     }
 
 }

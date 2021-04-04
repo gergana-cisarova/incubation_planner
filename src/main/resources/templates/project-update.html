@@ -43,8 +43,8 @@
                                 id="inputName"
                                 class="form-control"
                                 aria-describedby="nameHelpInline">
-                        <p class="text-primary" >Previous name</p>
-                        <p class="text-primary" th:text="${current.name}"></p>
+                        <p class="text-primary" >Previous name:
+                        <br class="text-primary" th:text="${current.name}"></p>
                         <small id="nameError" class="invalid-feedback text-light form-text bg-danger rounded">The name
                             must be at least 3 characters long and not longer than 250 characters</small>
 
@@ -85,8 +85,8 @@
                                                   class="form-control"
                                                   aria-describedby="descriptionInline">
                                         </textarea>
-                        <p class="text-primary">Previous description</p>
-                        <p class="text-primary" th:text="${current.description}"></p>
+                        <p class="text-primary">Previous description:
+                        <br th:text="${current.description}"></p>
                         <small id="descriptionError"
                                class="invalid-feedback text-light form-text bg-danger rounded">The description must be
                             at least 10 characters long and not longer than 1500 characters</small>

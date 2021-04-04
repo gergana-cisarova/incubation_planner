@@ -1,6 +1,7 @@
 package com.example.incubation_planner.services.impl;
 
 import com.example.incubation_planner.services.CarouselService;
+import com.example.incubation_planner.services.ImageShuffler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,15 +10,16 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 public class CarouselServiceImpl implements CarouselService {
-    private List<String> images = new ArrayList<>();
+    private final ImageShuffler imageShuffler;
     private Logger LOGGER = LoggerFactory.getLogger(CarouselServiceImpl.class);
+    private List<String> images = new ArrayList<>();
 
-    public CarouselServiceImpl(@Value("${carousel.images}") List<String> images) {
+    public CarouselServiceImpl(@Value("${carousel.images}") List<String> images, ImageShuffler imageShuffler) {
+        this.imageShuffler = imageShuffler;
         this.images.addAll(images);
     }
 
@@ -40,12 +42,14 @@ public class CarouselServiceImpl implements CarouselService {
 
     @Override
     public String thirdImage() {
-        return images.get(3);
+        return images.get(2);
     }
 
     @Scheduled(cron =  "*/10 * * * * *")
     public void refresh() {
         LOGGER.info("Shuffling images...");
-        Collections.shuffle(images);
+//        Collections.shuffle(images);
+        imageShuffler.shuffle(images);
+
     }
 }

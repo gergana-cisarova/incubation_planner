@@ -4,7 +4,6 @@ import com.example.incubation_planner.models.entity.*;
 import com.example.incubation_planner.models.entity.enums.Sector;
 import com.example.incubation_planner.models.entity.enums.UserType;
 import com.example.incubation_planner.models.service.IdeaServiceModel;
-import com.example.incubation_planner.models.view.AddIdeaLogViewModel;
 import com.example.incubation_planner.models.view.IdeaViewModel;
 import com.example.incubation_planner.repositories.*;
 import com.example.incubation_planner.services.impl.IdeaServiceImpl;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,14 +34,11 @@ public class IdeaServiceTest {
     LogRepository mockLogRepository;
     @Mock
     EquipmentRepository mockEquipmentRepository;
-    @Mock
-    LabRepository mockLabRepository;
+
     @Mock
     ActivityTypeRepository mockActivityTypeRepository;
     @Mock
     UserRepository mockUserRepository;
-    @Mock
-    ProjectRepository mockProjectRepository;
 
 
     @InjectMocks
@@ -109,17 +104,19 @@ public class IdeaServiceTest {
                 .setStatus("Accepted")
                 .setActivityType(activityType)
                 .setPromoter(user);
-        when(mockIdeaRepository.findAllByOrderByStatusDesc()).thenReturn(List.of(idea2, current));
-        when(mockActivityTypeRepository.findByActivityName(any())).thenReturn(java.util.Optional.ofNullable(activityType));
-        when(mockEquipmentRepository.findByEquipmentName(any())).thenReturn(java.util.Optional.ofNullable(equipment));
+        when(mockIdeaRepository.findAllByOrderByStatusDesc()).thenReturn(List.of(current, idea2));
         when(mockUserRepository.findByUsername(any())).thenReturn(java.util.Optional.ofNullable(user));
-        IdeaViewModel ideaViewModel1 = mapIdea(current);
-        IdeaViewModel ideaViewModel2 = mapIdea(idea2);
+        String fullNameCurrent = String.format("%s %s", current.getPromoter().getFirstName(), current.getPromoter().getLastName());
+        String fullNameIdea2 = String.format("%s %s", current.getPromoter().getFirstName(), current.getPromoter().getLastName());
 
         List<IdeaViewModel> result = service.getAll();
 
-        Assertions.assertEquals(ideaViewModel2.getName(), result.get(0).getName());
-        Assertions.assertEquals(ideaViewModel1.getName(), result.get(1).getName());
+        Assertions.assertEquals(current.getName(), result.get(0).getName());
+        Assertions.assertEquals(idea2.getName(), result.get(1).getName());
+        Assertions.assertEquals("Pending", result.get(0).getStatus());
+        Assertions.assertEquals("Accepted", result.get(1).getStatus());
+        Assertions.assertEquals(fullNameCurrent, result.get(0).getPromoter());
+        Assertions.assertEquals(fullNameIdea2, result.get(1).getPromoter());
 
     }
 
@@ -131,6 +128,7 @@ public class IdeaServiceTest {
 
         Assertions.assertTrue(isAccepted);
     }
+
     @Test
     void markIdeaAsAcceptedTestWithNullIdea() {
         when(mockIdeaRepository.findById("1")).thenReturn(java.util.Optional.empty());
@@ -150,6 +148,7 @@ public class IdeaServiceTest {
         List<String> deletedLogs = service.deleteIdea("1");
 
         Assertions.assertEquals(current.getName(), deletedLogs.get(0));
+
     }
 
     @Test
@@ -175,7 +174,6 @@ public class IdeaServiceTest {
 
     @Test
     void deleteIdeasOfUserTest() {
-        user.setId("111");
 
         IdeaServiceImpl mockService = mock(IdeaServiceImpl.class);
         mockService.deleteIdeasOfUser(user.getId());
@@ -203,6 +201,7 @@ public class IdeaServiceTest {
         UserEntity user = new UserEntity();
         user.setUsername("pesho")
                 .setPassword("123456789")
+                .setFirstName("Pesho")
                 .setLastName("Peshov")
                 .setEmail("pesho@pesho.bg")
                 .setSector(Sector.Arts)
@@ -230,27 +229,6 @@ public class IdeaServiceTest {
         lab.setName("Monnet");
         lab.setEquipment(equipment);
         return lab;
-    }
-
-    private IdeaViewModel mapIdea(Idea idea) {
-        when(mockActivityTypeRepository.findByActivityName(any())).thenReturn(java.util.Optional.ofNullable(activityType));
-        when(mockEquipmentRepository.findByEquipmentName(any())).thenReturn(java.util.Optional.ofNullable(equipment));
-        when(mockUserRepository.findByUsername(any())).thenReturn(java.util.Optional.ofNullable(user));
-
-        IdeaViewModel ideaViewModel = new IdeaViewModel();
-        ideaViewModel = modelMapper.map(idea, IdeaViewModel.class);
-        ideaViewModel.setActivityType(mockActivityTypeRepository
-                .findByActivityName(idea.getActivityType().getActivityName()).orElseThrow(NullPointerException::new).getActivityName());
-        ideaViewModel.setNeededEquipment(mockEquipmentRepository
-                .findByEquipmentName(idea.getNeededEquipment().getEquipmentName()).orElseThrow(NullPointerException::new).getEquipmentName());
-        String firstName = mockUserRepository
-                .findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new).getFirstName();
-        String lastName = mockUserRepository
-                .findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new).getLastName();
-        ideaViewModel.setPromoter(String.format("%s %s", firstName, lastName));
-        ideaViewModel.setPromoter(mockUserRepository
-                .findByUsername(idea.getPromoter().getUsername()).orElseThrow(NullPointerException::new).getUsername());
-        return ideaViewModel;
     }
 
 }

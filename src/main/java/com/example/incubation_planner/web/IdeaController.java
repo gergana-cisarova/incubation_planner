@@ -94,7 +94,7 @@ public class IdeaController {
             if (bindingResult.hasErrors()) {
                 redirectAttributes.addFlashAttribute("ideaAddBindingModel", ideaAddBindingModel);
                 redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.ideaAddBindingModel", bindingResult);
-                return "redirect:add";
+                return "redirect:/ideas/add";
             }
 
             IdeaServiceModel ideaServiceModel = modelMapper.map(

@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findByUsername(String userName) {
-        return userRepository.findByUsername(userName).orElseThrow(IllegalArgumentException::new);
+        return userRepository.findByUsername(userName).orElse(null);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(String id) {
+    public List<LogEntity> deleteUser(String id) {
 
         UserEntity user = userRepository.getOne(id);
         user.getProjects().stream().forEach(p -> p.getCollaborators().remove(user));
@@ -158,12 +158,15 @@ public class UserServiceImpl implements UserService {
             logs.forEach(l -> logRepository.delete(l));
         }
         userRepository.deleteById(id);
-    }
+        return logs;
+}
 
     @Override
     public Set<Project> getProjectsByUser(String username) {
         if (userRepository.findByUsername(username).isPresent()) {
-            return userRepository.findByUsername(username).get().getProjects();
+            UserEntity user = userRepository.findByUsername(username).get();
+            Set<Project> projects = user.getProjects();
+            return user.getProjects();
         } else {
             throw new IllegalArgumentException("No user with such username");
         }
@@ -180,7 +183,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeRole(String username, List<String> roles) {
+    public List<UserRoleEntity> changeRole(String username, List<String> roles) {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(IllegalArgumentException::new);
         List<UserRoleEntity> newRoleList = new ArrayList<>();
         roles.forEach(r -> {
@@ -189,6 +192,7 @@ public class UserServiceImpl implements UserService {
         });
         user.setRoles(newRoleList);
         userRepository.save(user);
+        return newRoleList;
     }
 
 }

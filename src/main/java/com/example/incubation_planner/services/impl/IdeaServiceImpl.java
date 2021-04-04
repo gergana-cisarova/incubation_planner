@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class IdeaServiceImpl implements IdeaService {
-    private Logger LOGGER = LoggerFactory.getLogger(IdeaService.class);
+    private Logger LOGGER = LoggerFactory.getLogger(IdeaServiceImpl.class);
 
     private final IdeaRepository ideaRepository;
     private final ModelMapper modelMapper;
@@ -96,7 +96,7 @@ public class IdeaServiceImpl implements IdeaService {
     public boolean markIdeaAsAccepted(String id) {
         Optional<Idea> currentIdea = ideaRepository.findById(id);
         if (currentIdea.isPresent()) {
-            Idea idea =currentIdea.get();
+            Idea idea = currentIdea.get();
             idea.setStatus("Accepted");
             ideaRepository.save(idea);
             return true;

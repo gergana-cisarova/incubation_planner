@@ -91,21 +91,10 @@ public class LabServiceImpl implements LabService {
         Map<String, String> info = new TreeMap<>();
         List<Lab> labs = labRepository
                 .findAllByEquipment_EquipmentName(neededEquipment);
-
         labs
                 .forEach(l -> {
-                    List<Project> projects = l.getProjects();
-                    projects.sort((p1,p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
-                    StringBuilder sb = new StringBuilder();
-                    projects.forEach(p -> {
-                        if(p.getEndDate().isAfter(LocalDateTime.now())) {
-                            String currentProject =
-                                    String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
-                                            p.getStartDate().getDayOfMonth(), p.getStartDate().getMonth(), p.getStartDate().getYear(), p.getStartDate().getHour(), p.getStartDate().getMinute(),
-                                            p.getEndDate().getDayOfMonth(), p.getEndDate().getMonth(), p.getEndDate().getYear(), p.getEndDate().getHour(), p.getEndDate().getMinute());
-                            sb.append(currentProject);
-                        }});
-                    info.put(l.getName(), sb.toString());
+                    String infoForLab = getInfoForLab(l);
+                    info.put(l.getName(), infoForLab);
                 });
 
         return info;
@@ -118,62 +107,27 @@ public class LabServiceImpl implements LabService {
                 .findAll();
         labs
                 .forEach(l -> {
-                    List<Project> projects = l.getProjects();
-                    projects.sort((p1,p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
-                    StringBuilder sb = new StringBuilder();
-                    projects.forEach(p -> {
-                        if(p.getEndDate().isAfter(LocalDateTime.now())) {
-                            String currentProject =
-                                    String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
-                                            p.getStartDate().getDayOfMonth(), p.getStartDate().getMonth(), p.getStartDate().getYear(), p.getStartDate().getHour(), p.getStartDate().getMinute(),
-                                            p.getEndDate().getDayOfMonth(), p.getEndDate().getMonth(), p.getEndDate().getYear(), p.getEndDate().getHour(), p.getEndDate().getMinute());
-                            sb.append(currentProject);
-                        }});
-                    info.put(l.getName(), sb.toString());
+                    String infoForLab = getInfoForLab(l);
+                    info.put(l.getName(), infoForLab);
                 });
 
-        return info;    }
+        return info;
+    }
 
+    private String getInfoForLab(Lab l) {
+        List<Project> projects = l.getProjects();
+        List<Project> copyOfProjects = new ArrayList<>(projects);
+        copyOfProjects.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+        StringBuilder sb = new StringBuilder();
+        copyOfProjects.forEach(p -> {
+            if (p.getEndDate().isAfter(LocalDateTime.now())) {
+                String currentProject =
+                        String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
+                                p.getStartDate().getDayOfMonth(), p.getStartDate().getMonth(), p.getStartDate().getYear(), p.getStartDate().getHour(), p.getStartDate().getMinute(),
+                                p.getEndDate().getDayOfMonth(), p.getEndDate().getMonth(), p.getEndDate().getYear(), p.getEndDate().getHour(), p.getEndDate().getMinute());
+                sb.append(currentProject);
+            }
+        });
+        return sb.toString();
+    }
 }
-
-
-//    private final LabRepository labRepository;
-//
-//    public LabServiceImpl(LabRepository labRepository) {
-//        this.labRepository = labRepository;
-//    }
-//
-//
-//    @Override
-//    public void initLabs() {
-//
-//        if (labRepository.count() == 0) {
-//            for (LabName lab : LabName.values()) {
-//                Lab newLab = new Lab();
-//                newLab.setName(lab.name());
-//                switch (lab.name()) {
-//                    case "Leonardo": {
-//                        newLab.setEquipment(Equipment.Wood_workshop);
-//                        break;
-//                    }
-//                    case "Tesla": {
-//                        newLab.setEquipment(Equipment.Metal_workshop);
-//                        break;
-//                    }
-//                    case "Lumiere": {
-//                        newLab.setEquipment(Equipment.Digital_production_workshop);
-//                        break;
-//                    }
-//                    case "Bell": {
-//                        newLab.setEquipment(Equipment.Prototyping_space);
-//                        break;
-//                    }
-//                    default : {
-//                        newLab.setEquipment(Equipment.Computers_Multimedia_Printers);
-//                        break;
-//                    }
-//                    }
-//                   this.labRepository.save(newLab);
-//                }
-//            }
-//        }

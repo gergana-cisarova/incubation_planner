@@ -9,13 +9,13 @@ import com.example.incubation_planner.models.view.ProjectResultViewModel;
 import java.util.List;
 
 public interface ProjectService {
-    void createProject(ProjectServiceModel projectServiceModel);
+    ProjectBasicViewModel createProject(ProjectServiceModel projectServiceModel);
 
     List<ProjectBasicViewModel> getActiveProjectsOrderedbyStartDate();
 
     ProjectDetailedViewModel extractProjectModel(String id);
 
-    void deleteProject(String id);
+    List<String> deleteProject(String id);
 
     List<ProjectBasicViewModel> getUserProjectsOrderedByStartDate(String username);
 
@@ -42,6 +42,8 @@ public interface ProjectService {
     List<ProjectResultViewModel> getResults(String it);
 
     List<ProjectBasicViewModel> getUserCollaborationsOrderedByStartDate(String userName);
+
+    long getDurationInDays(ProjectServiceModel projectAddBindingModel);
 
     void deleteProjectsOfUser(String id);
 

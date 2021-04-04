@@ -1,15 +1,13 @@
 package com.example.incubation_planner.services;
 
+import com.example.incubation_planner.models.entity.LogEntity;
 import com.example.incubation_planner.models.entity.Project;
 import com.example.incubation_planner.models.entity.UserEntity;
-import com.example.incubation_planner.models.entity.enums.UserRole;
+import com.example.incubation_planner.models.entity.UserRoleEntity;
 import com.example.incubation_planner.models.service.UserRegistrationServiceModel;
 import com.example.incubation_planner.models.view.UserViewModel;
-import org.springframework.security.access.prepost.PreAuthorize;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public interface UserService {
@@ -26,11 +24,11 @@ public interface UserService {
 
     List<UserViewModel> getAll();
 
-    void deleteUser(String id);
+    List<LogEntity> deleteUser(String id);
 
     Set<Project> getProjectsByUser(String username);
 
     Set<String> findAllUsernamesExceptCurrent();
 
-    void changeRole(String username, List<String> roles);
+    List<UserRoleEntity> changeRole(String username, List<String> roles);
 }

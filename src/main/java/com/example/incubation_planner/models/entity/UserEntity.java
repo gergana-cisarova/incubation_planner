@@ -49,6 +49,8 @@ public class UserEntity extends BaseEntity {
     @ManyToMany(mappedBy = "collaborators", targetEntity = Project.class)
     private Set<Project> projects = new HashSet<>();
 
+    public UserEntity() {
+    }
 
     public String getUsername() {
         return username;

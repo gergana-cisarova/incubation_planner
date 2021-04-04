@@ -21,7 +21,9 @@
 
     <div class="container-fluid">
         <p></p>
-        <span class="border border-success" id="confirm" th:text="${message}"> </span> <table>
+        <div id="confirm" class="alert alert-success" role="alert" th:text="${message}"></div>
+
+        <table>
             <tbody th:object="${current}">
             <tr>
                 <td>Name</td>

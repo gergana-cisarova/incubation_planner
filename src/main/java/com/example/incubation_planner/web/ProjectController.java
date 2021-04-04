@@ -128,7 +128,6 @@ public class ProjectController {
         if (principal != null) {
             String userName = principal.getUsername();
             projectService.joinProject(id, userName);
-            model.addAttribute("id", id);
 
             redirectAttributes.addFlashAttribute("message", "You are now a collaborator in the project");
         }
@@ -154,7 +153,7 @@ public class ProjectController {
     public String updateProject(@PathVariable String id,
                                 Model model) {
         ProjectServiceModel currentData = projectService.extractProjectServiceModel(id);
-        long durationInDays = getDurationInDays(currentData);
+        long durationInDays = projectService.getDurationInDays(currentData);
         model.addAttribute("current", currentData);
 //        model.addAttribute("labs", labService.getAllLabs());
         model.addAttribute("duration", durationInDays);
@@ -220,11 +219,5 @@ public class ProjectController {
     }
 
 
-    private long getDurationInDays(ProjectServiceModel projectAddBindingModel) {
-        Instant startDate = projectAddBindingModel.getStartDate().atZone(ZoneId.systemDefault()).toInstant();
-        Instant endDate = projectAddBindingModel.getEndDate().atZone(ZoneId.systemDefault()).toInstant();
-
-        return Duration.between(startDate, endDate).toDays();
-    }
 
 }

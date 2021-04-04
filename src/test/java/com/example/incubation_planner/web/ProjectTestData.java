@@ -14,6 +14,7 @@ public class ProjectTestData {
     private Equipment equipment;
     private ActivityType activityType;
     private Lab lab;
+    private String userId;
 
     private ActivityTypeRepository activityTypeRepository;
     private EquipmentRepository equipmentRepository;
@@ -53,6 +54,7 @@ public class ProjectTestData {
                 .setSector(Sector.Arts)
                 .setUserType(UserType.Company);
         userRepository.save(user);
+        userId = user.getId();
 
         Project project = new Project();
         project
@@ -82,6 +84,10 @@ public class ProjectTestData {
 
     public String getProjectId() {
         return projectId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public Equipment getEquipment() {

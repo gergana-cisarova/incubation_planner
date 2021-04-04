@@ -13,20 +13,27 @@ import com.example.incubation_planner.repositories.LogRepository;
 import com.example.incubation_planner.repositories.ProjectRepository;
 import com.example.incubation_planner.services.*;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
+    private final ModelMapper modelMapper;
     private final ProjectRepository projectRepository;
     private final LogRepository logRepository;
-    private final ModelMapper modelMapper;
     private final UserService userService;
     private final ActivityTypeRepository activityTypeRepository;
     private final LabService labService;
     private final EquipmentRepository equipmentRepository;
+    private Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
     public ProjectServiceImpl(ProjectRepository projectRepository, LogRepository logRepository, ModelMapper modelMapper, UserService userService, ActivityTypeRepository activityTypeRepository, LabService labService, EquipmentRepository equipmentRepository) {
         this.projectRepository = projectRepository;
@@ -39,7 +46,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void createProject(ProjectServiceModel projectServiceModel) {
+    public ProjectBasicViewModel createProject(ProjectServiceModel projectServiceModel) {
 
         Project project = modelMapper.map(projectServiceModel, Project.class);
         project.setPromoter(userService.findByUsername(projectServiceModel.getPromoter()))
@@ -48,6 +55,11 @@ public class ProjectServiceImpl implements ProjectService {
                 .setNeededEquipment(equipmentRepository.findByEquipmentName(projectServiceModel.getNeededEquipment()).orElseThrow(NullPointerException::new));
 
         projectRepository.save(project);
+        ProjectBasicViewModel viewModel = modelMapper.map(project, ProjectBasicViewModel.class);
+        viewModel
+                .setLab(project.getLab().getName())
+                .setStartDate(project.getStartDate().toString());
+        return viewModel;
     }
 
     @Override
@@ -87,13 +99,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void deleteProject(String id) {
-       List<LogEntity> logs = logRepository.findByProject_Id(id);
-       if (!logs.isEmpty()) {
-           logs.forEach(l -> logRepository.delete(l));
-       }
+    public List<String> deleteProject(String id) {
+        List<LogEntity> logs = logRepository.findByProject_Id(id);
+        List<String> deletedLogs = new ArrayList<>();
+        if (!logs.isEmpty()) {
+            logs.forEach(l -> {
+                deletedLogs.add(l.getProject().getName());
+                logRepository.delete(l);
+            });
+        }
+        LOGGER.info("Deleted logs for projects: {}", String.join(", ", deletedLogs));
         projectRepository.deleteById(id);
-
+        return deletedLogs;
     }
 
     @Override
@@ -118,14 +135,21 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void deleteProjectsOfUser(String id) {
-
-        projectRepository.findAllByPromoterId(id).forEach(p -> deleteProject(p.getId()));
+        List<String> deletedProjects = new ArrayList<>();
+        projectRepository.findAllByPromoterId(id)
+                .forEach(p -> {
+                    deletedProjects.add(p.getName());
+                    deleteProject(p.getId());
+                });
     }
 
     @Override
     public ProjectServiceModel findProjectById(String projectId) {
         Project project = projectRepository.getOne(projectId);
-        return modelMapper.map(project, ProjectServiceModel.class);
+        ProjectServiceModel model = modelMapper.map(project, ProjectServiceModel.class);
+        model.setPromoter(project.getPromoter().getUsername());
+        model.setLab(project.getLab().getName());
+        return model;
     }
 
     @Override
@@ -145,6 +169,7 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             UserEntity user = userService.findByUsername(userName);
             Project project = projectRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+            System.out.println();
             user.addProject(project);
             project.addCollaborator(user);
             userService.updateUser(user);
@@ -182,6 +207,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
         ProjectServiceModel projectServiceModel = modelMapper.map(project, ProjectServiceModel.class)
+                .setPromoter(project.getPromoter().getUsername())
                 .setActivityType(project.getActivityType().getActivityName())
                 .setLab(project.getLab().getName())
                 .setNeededEquipment(project.getNeededEquipment().getEquipmentName());
@@ -248,6 +274,13 @@ public class ProjectServiceImpl implements ProjectService {
         projectViewModel.setStartDate(startDate);
 
         return projectViewModel;
+    }
+
+    public long getDurationInDays(ProjectServiceModel projectServiceModel) {
+        Instant startDate = projectServiceModel.getStartDate().atZone(ZoneId.systemDefault()).toInstant();
+        Instant endDate = projectServiceModel.getEndDate().atZone(ZoneId.systemDefault()).toInstant();
+
+        return Duration.between(startDate, endDate).toDays();
     }
 
 }
