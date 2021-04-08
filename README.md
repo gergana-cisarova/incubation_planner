@@ -3,7 +3,6 @@ SoftUni Spring Advanced Project
 
 The application is intended to help with the management of innovation projects in an incubator.
 Most of the functionalities are only accessible to admins.
-Also available at: https://incubation-planner.herokuapp.com/
 
 For regular registered users, the functionalities are:
 - Login
