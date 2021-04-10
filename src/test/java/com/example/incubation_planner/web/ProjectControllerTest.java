@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -193,8 +194,8 @@ public class ProjectControllerTest {
                 .param("description", "123456789012")
                 .param("neededEquipment", "Computers_Multimedia_Printers")
                 .param("activityType", "Lecture")
-                .param("startDate", "2021-05-05T10:00")
-                .param("endDate", "2021-05-06T10:00")
+                .param("startDate", "2021-05-05")
+                .param("endDate", "2021-05-06")
                 .param("lab", "Tesla1")
                 .param("promoter", "pesho")
                 .with(csrf()))
@@ -206,8 +207,8 @@ public class ProjectControllerTest {
         Assertions.assertEquals(1, projectRepository.count());
         Assertions.assertEquals("12345", project.getName());
         Assertions.assertEquals("123456789012", project.getDescription());
-        Assertions.assertEquals(LocalDateTime.of(2021, 5, 5, 10, 0), project.getStartDate());
-        Assertions.assertEquals(LocalDateTime.of(2021, 5, 6, 10, 0), project.getEndDate());
+        Assertions.assertEquals(LocalDate.of(2021, 5, 5), project.getStartDate());
+        Assertions.assertEquals(LocalDate.of(2021, 5, 6), project.getEndDate());
 
     }
 

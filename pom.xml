@@ -12,6 +12,7 @@
     <artifactId>incubation_planner</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>incubation_planner</name>
+    <packaging>jar</packaging>
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>15</java.version>
@@ -92,6 +93,12 @@
             <artifactId>h2</artifactId>
             <version>1.4.200</version>
             <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.0.2</version>
         </dependency>
 
 

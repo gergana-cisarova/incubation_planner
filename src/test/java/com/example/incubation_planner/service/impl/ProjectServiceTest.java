@@ -28,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -125,13 +126,13 @@ public class ProjectServiceTest {
                 .setSector(Sector.IT)
                 .setNeededEquipment("Computers_Multimedia_Printers")
                 .setPromoter("pesho")
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         ProjectBasicViewModel viewModel = service.createProject(projectServiceModel);
 
         Assertions.assertEquals("000", viewModel.getName());
-        Assertions.assertEquals("2021-05-16T10:00", viewModel.getStartDate());
+        Assertions.assertEquals("2021-05-16", viewModel.getStartDate());
 
     }
 
@@ -155,9 +156,9 @@ public class ProjectServiceTest {
     void testExtractProjectModel() {
         when(mockProjectRepository.findById(any())).thenReturn(java.util.Optional.ofNullable(firstProject));
         when(mockUserRepository.findByUsername(any())).thenReturn(java.util.Optional.ofNullable(firstUser));
-        String duration = String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
-                firstProject.getStartDate().getDayOfMonth(), firstProject.getStartDate().getMonth(), firstProject.getStartDate().getYear(), firstProject.getStartDate().getHour(), firstProject.getStartDate().getMinute(),
-                firstProject.getEndDate().getDayOfMonth(), firstProject.getEndDate().getMonth(), firstProject.getEndDate().getYear(), firstProject.getEndDate().getHour(), firstProject.getEndDate().getMinute());
+        String duration = String.format("%02d %s %s - %02d %s %s <br />",
+                firstProject.getStartDate().getDayOfMonth(), firstProject.getStartDate().getMonth(), firstProject.getStartDate().getYear(),
+                firstProject.getEndDate().getDayOfMonth(), firstProject.getEndDate().getMonth(), firstProject.getEndDate().getYear());
 
         ProjectDetailedViewModel model = service.extractProjectModel("1");
         Assertions.assertEquals("123", model.getName());
@@ -336,7 +337,7 @@ public class ProjectServiceTest {
         Assertions.assertEquals("1234567890", result.getDescription());
         Assertions.assertEquals("pesho", result.getPromoter());
         Assertions.assertEquals("Carnegie1", result.getLab());
-        Assertions.assertEquals(LocalDateTime.of(2021, 5, 16, 10, 0), result.getStartDate());
+        Assertions.assertEquals(LocalDate.of(2021, 5, 16), result.getStartDate());
     }
 
     @Test
@@ -359,8 +360,8 @@ public class ProjectServiceTest {
                 .setSector(Sector.Arts)
                 .setNeededEquipment("Computers_Multimedia_Printers")
                 .setPromoter("pesho")
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         service.updateProject("1", projectServiceModel);
 
@@ -368,8 +369,8 @@ public class ProjectServiceTest {
         Assertions.assertEquals("updated1234", firstProject.getDescription());
         Assertions.assertEquals("Arts", firstProject.getSector().name());
         Assertions.assertEquals("Lecture", firstProject.getActivityType().getActivityName());
-        Assertions.assertEquals(LocalDateTime.of(2021, 5, 16, 10, 0), firstProject.getStartDate());
-        Assertions.assertEquals(LocalDateTime.of(2021, 5, 17, 10, 0), firstProject.getEndDate());
+        Assertions.assertEquals(LocalDate.of(2021, 5, 16), firstProject.getStartDate());
+        Assertions.assertEquals(LocalDate.of(2021, 5, 17), firstProject.getEndDate());
     }
 
 
@@ -409,8 +410,8 @@ public class ProjectServiceTest {
     @Test
     void testGetDurationInDays() {
         projectServiceModel
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         long result = service.getDurationInDays(projectServiceModel);
         Assertions.assertEquals(1L, result);
@@ -455,8 +456,8 @@ public class ProjectServiceTest {
                 .setActivityType(activityType)
                 .setActive(true)
                 .setPromoter(firstUser)
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
         return project;
     }
 
@@ -470,8 +471,8 @@ public class ProjectServiceTest {
                 .setLab(lab)
                 .setActivityType(activityType)
                 .setPromoter(firstUser)
-                .setStartDate(LocalDateTime.of(2021, 5, 10, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 12, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 10))
+                .setEndDate(LocalDate.of(2021, 5, 12));
         return project2;
     }
 
@@ -495,10 +496,9 @@ public class ProjectServiceTest {
     }
 
     private String convertDate(Project project) {
-        return String.format("%02d %s %s (%02d:%02d)",
+        return String.format("%02d %s %s",
                 project.getStartDate().getDayOfMonth(), project.getStartDate().getMonth(),
-                project.getStartDate().getYear(), project.getStartDate().getHour(),
-                project.getStartDate().getMinute());
+                project.getStartDate().getYear());
     }
 
 }

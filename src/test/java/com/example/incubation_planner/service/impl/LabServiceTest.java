@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -112,8 +113,8 @@ public class LabServiceTest {
 
         Assertions.assertTrue(result.keySet().contains("Tesla2"));
         Assertions.assertTrue(result.keySet().contains("Tesla"));
-        Assertions.assertEquals("16 MAY 2023 (10:00) - 17 MAY 2023 (10:00) <br />20 MAY 2023 (10:00) - 22 MAY 2023 (10:00) <br />", result.get("Tesla"));
-        Assertions.assertEquals("24 APRIL 2023 (10:00) - 26 APRIL 2023 (10:00) <br />", result.get("Tesla2"));
+        Assertions.assertEquals("16 MAY 2023 - 17 MAY 2023 <br />20 MAY 2023 - 22 MAY 2023 <br />", result.get("Tesla"));
+        Assertions.assertEquals("24 APRIL 2023 - 26 APRIL 2023 <br />", result.get("Tesla2"));
     }
 
     @Test
@@ -128,9 +129,9 @@ public class LabServiceTest {
         Assertions.assertTrue(result.keySet().contains("Tesla2"));
         Assertions.assertTrue(result.keySet().contains("Tesla"));
         Assertions.assertTrue(result.keySet().contains("Carnegie1"));
-        Assertions.assertEquals("16 MAY 2023 (10:00) - 17 MAY 2023 (10:00) <br />20 MAY 2023 (10:00) - 22 MAY 2023 (10:00) <br />", result.get("Tesla"));
-        Assertions.assertEquals("24 APRIL 2023 (10:00) - 26 APRIL 2023 (10:00) <br />", result.get("Tesla2"));
-        Assertions.assertEquals("25 APRIL 2023 (10:00) - 29 APRIL 2023 (10:00) <br />", result.get("Carnegie1"));
+        Assertions.assertEquals("16 MAY 2023 - 17 MAY 2023 <br />20 MAY 2023 - 22 MAY 2023 <br />", result.get("Tesla"));
+        Assertions.assertEquals("24 APRIL 2023 - 26 APRIL 2023 <br />", result.get("Tesla2"));
+        Assertions.assertEquals("25 APRIL 2023 - 29 APRIL 2023 <br />", result.get("Carnegie1"));
     }
 
     //    Initialization methods
@@ -180,8 +181,8 @@ public class LabServiceTest {
                 .setLab(secondLab)
                 .setActivityType(activityType)
                 .setActive(true)
-                .setStartDate(LocalDateTime.of(2023, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2023, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2023, 5, 16))
+                .setEndDate(LocalDate.of(2023, 5, 17));
 
         Project second = new Project();
         second
@@ -191,8 +192,8 @@ public class LabServiceTest {
                 .setNeededEquipment(secondEquipment)
                 .setLab(secondLab)
                 .setActivityType(activityType)
-                .setStartDate(LocalDateTime.of(2023, 5, 20, 10, 0))
-                .setEndDate(LocalDateTime.of(2023, 5, 22, 10, 0));
+                .setStartDate(LocalDate.of(2023, 5, 20))
+                .setEndDate(LocalDate.of(2023, 5, 22));
         Project old = new Project();
         old
                 .setName("789")
@@ -201,8 +202,8 @@ public class LabServiceTest {
                 .setNeededEquipment(secondEquipment)
                 .setLab(secondLab)
                 .setActivityType(activityType)
-                .setStartDate(LocalDateTime.of(2021, 3, 20, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 3, 22, 10, 0));
+                .setStartDate(LocalDate.of(2021, 3, 20))
+                .setEndDate(LocalDate.of(2021, 3, 22));
 
         Project third = new Project();
         third
@@ -212,8 +213,8 @@ public class LabServiceTest {
                 .setNeededEquipment(secondEquipment)
                 .setLab(thirdLab)
                 .setActivityType(activityType)
-                .setStartDate(LocalDateTime.of(2023, 4, 24, 10, 0))
-                .setEndDate(LocalDateTime.of(2023, 4, 26, 10, 0));
+                .setStartDate(LocalDate.of(2023, 4, 24))
+                .setEndDate(LocalDate.of(2023, 4, 26));
 
         Project fourth = new Project();
         fourth
@@ -223,8 +224,8 @@ public class LabServiceTest {
                 .setNeededEquipment(firstEquipment)
                 .setLab(thirdLab)
                 .setActivityType(activityType)
-                .setStartDate(LocalDateTime.of(2023, 4, 25, 10, 0))
-                .setEndDate(LocalDateTime.of(2023, 4, 29, 10, 0));
+                .setStartDate(LocalDate.of(2023, 4, 25))
+                .setEndDate(LocalDate.of(2023, 4, 29));
         return List.of(first, second, old, third, fourth);
     }
 

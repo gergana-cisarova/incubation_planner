@@ -4,10 +4,8 @@ import com.example.incubation_planner.models.entity.enums.Sector;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,11 +24,11 @@ public class Project extends BaseEntity {
 
     @Column(name = "starting_date")
     @NotNull
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
     @NotNull
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @ManyToOne
     @NotNull
@@ -90,21 +88,20 @@ public class Project extends BaseEntity {
         return this;
     }
 
-
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public Project setStartDate(LocalDateTime startDate) {
+    public Project setStartDate(LocalDate startDate) {
         this.startDate = startDate;
         return this;
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public Project setEndDate(LocalDateTime endDate) {
+    public Project setEndDate(LocalDate endDate) {
         this.endDate = endDate;
         return this;
     }

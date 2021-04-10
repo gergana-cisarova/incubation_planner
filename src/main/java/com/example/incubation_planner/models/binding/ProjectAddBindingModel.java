@@ -1,12 +1,14 @@
 package com.example.incubation_planner.models.binding;
 
 import com.example.incubation_planner.models.entity.enums.Sector;
-import com.example.incubation_planner.models.validator.FieldMatch;
 import com.example.incubation_planner.models.validator.ValidDates;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.*;
-import java.time.LocalDateTime;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.time.LocalDate;
 @ValidDates(
         first = "startDate",
         second = "endDate"
@@ -25,14 +27,14 @@ public class ProjectAddBindingModel {
     private String description;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @FutureOrPresent(message = "The date cannot be in the past")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @FutureOrPresent(message = "The date cannot be in the past")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @NotEmpty
     private String activityType;
@@ -71,20 +73,20 @@ public class ProjectAddBindingModel {
         return this;
     }
 
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public ProjectAddBindingModel setStartDate(LocalDateTime startDate) {
+    public ProjectAddBindingModel setStartDate(LocalDate startDate) {
         this.startDate = startDate;
         return this;
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public ProjectAddBindingModel setEndDate(LocalDateTime endDate) {
+    public ProjectAddBindingModel setEndDate(LocalDate endDate) {
         this.endDate = endDate;
         return this;
     }

@@ -83,9 +83,9 @@ public class ProjectServiceImpl implements ProjectService {
                 .setLab(project.getLab().getName())
                 .setNeededEquipment(project.getNeededEquipment().getEquipmentName());
 
-        String duration = String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
-                project.getStartDate().getDayOfMonth(), project.getStartDate().getMonth(), project.getStartDate().getYear(), project.getStartDate().getHour(), project.getStartDate().getMinute(),
-                project.getEndDate().getDayOfMonth(), project.getEndDate().getMonth(), project.getEndDate().getYear(), project.getEndDate().getHour(), project.getEndDate().getMinute());
+        String duration = String.format("%02d %s %s - %02d %s %s <br />",
+                project.getStartDate().getDayOfMonth(), project.getStartDate().getMonth(), project.getStartDate().getYear(),
+                project.getEndDate().getDayOfMonth(), project.getEndDate().getMonth(), project.getEndDate().getYear());
         projectViewModel.setDuration(duration);
 
         StringBuilder sb = new StringBuilder();
@@ -266,10 +266,9 @@ public class ProjectServiceImpl implements ProjectService {
         projectViewModel.setActivityType(p.getActivityType().getActivityName())
                 .setLab(p.getLab().getName());
 
-        String startDate = String.format("%02d %s %s (%02d:%02d)",
+        String startDate = String.format("%02d %s %s",
                 p.getStartDate().getDayOfMonth(), p.getStartDate().getMonth(),
-                p.getStartDate().getYear(), p.getStartDate().getHour(),
-                p.getStartDate().getMinute());
+                p.getStartDate().getYear());
 
         projectViewModel.setStartDate(startDate);
 
@@ -277,8 +276,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     public long getDurationInDays(ProjectServiceModel projectServiceModel) {
-        Instant startDate = projectServiceModel.getStartDate().atZone(ZoneId.systemDefault()).toInstant();
-        Instant endDate = projectServiceModel.getEndDate().atZone(ZoneId.systemDefault()).toInstant();
+        Instant startDate = projectServiceModel.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant endDate = projectServiceModel.getEndDate().atStartOfDay(ZoneId.systemDefault()).toInstant();
 
         return Duration.between(startDate, endDate).toDays();
     }

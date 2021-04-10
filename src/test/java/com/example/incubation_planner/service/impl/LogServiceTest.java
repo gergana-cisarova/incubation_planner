@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -157,8 +158,8 @@ public class LogServiceTest {
                 .setLab(lab)
                 .setActivityType(activityType)
                 .setPromoter(firstUser)
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         Project secondProject = new Project();
         secondProject
@@ -169,8 +170,8 @@ public class LogServiceTest {
                 .setLab(lab)
                 .setActivityType(activityType)
                 .setPromoter(firstUser)
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         Idea firstIdea = new Idea();
         firstIdea

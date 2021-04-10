@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,8 +231,8 @@ public class UserServiceTest {
                 .setActivityType(activityType)
                 .setPromoter(firstUser)
                 .setCollaborators(Set.of(secondUser))
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
         Project secondProject = new Project();
         secondProject
                 .setName("456")
@@ -242,8 +243,8 @@ public class UserServiceTest {
                 .setActivityType(activityType)
                 .setPromoter(firstUser)
                 .setCollaborators(Set.of(secondUser))
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         Project thirdProject = new Project();
         thirdProject
@@ -255,8 +256,8 @@ public class UserServiceTest {
                 .setActivityType(activityType)
                 .setPromoter(secondUser)
                 .setCollaborators(Set.of(firstUser))
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
         Project fourthProject = new Project();
         fourthProject
                 .setName("012")
@@ -267,8 +268,8 @@ public class UserServiceTest {
                 .setActivityType(activityType)
                 .setPromoter(secondUser)
                 .setCollaborators(Set.of(firstUser))
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         Project fifthProject = new Project();
         fifthProject
@@ -281,8 +282,8 @@ public class UserServiceTest {
                 .setActive(false)
                 .setPromoter(secondUser)
                 .setCollaborators(Set.of(firstUser))
-                .setStartDate(LocalDateTime.of(2021, 5, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 5, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 5, 16))
+                .setEndDate(LocalDate.of(2021, 5, 17));
 
         projects.add(firstProject);
         projects.add(secondProject);

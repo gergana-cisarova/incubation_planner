@@ -6,6 +6,7 @@ import com.example.incubation_planner.models.entity.enums.UserType;
 import com.example.incubation_planner.repositories.*;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ProjectTestData {
@@ -65,8 +66,8 @@ public class ProjectTestData {
                 .setNeededEquipment(equipment)
                 .setSector(Sector.Arts)
                 .setLab(lab)
-                .setStartDate(LocalDateTime.of(2021, 4, 16, 10, 0))
-                .setEndDate(LocalDateTime.of(2021, 4, 17, 10, 0));
+                .setStartDate(LocalDate.of(2021, 4, 16))
+                .setEndDate(LocalDate.of(2021, 4, 17));
 
         projectRepository.save(project);
         projectId = project.getId();

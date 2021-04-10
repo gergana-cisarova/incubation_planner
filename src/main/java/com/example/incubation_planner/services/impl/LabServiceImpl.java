@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,11 +121,11 @@ public class LabServiceImpl implements LabService {
         copyOfProjects.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
         StringBuilder sb = new StringBuilder();
         copyOfProjects.forEach(p -> {
-            if (p.getEndDate().isAfter(LocalDateTime.now())) {
+            if (p.getEndDate().isAfter(LocalDate.now())) {
                 String currentProject =
-                        String.format("%02d %s %s (%02d:%02d) - %02d %s %s (%02d:%02d) <br />",
-                                p.getStartDate().getDayOfMonth(), p.getStartDate().getMonth(), p.getStartDate().getYear(), p.getStartDate().getHour(), p.getStartDate().getMinute(),
-                                p.getEndDate().getDayOfMonth(), p.getEndDate().getMonth(), p.getEndDate().getYear(), p.getEndDate().getHour(), p.getEndDate().getMinute());
+                        String.format("%02d %s %s - %02d %s %s <br />",
+                                p.getStartDate().getDayOfMonth(), p.getStartDate().getMonth(), p.getStartDate().getYear(),
+                                p.getEndDate().getDayOfMonth(), p.getEndDate().getMonth(), p.getEndDate().getYear());
                 sb.append(currentProject);
             }
         });

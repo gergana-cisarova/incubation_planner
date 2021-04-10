@@ -5,7 +5,7 @@ import org.springframework.beans.PropertyAccessorFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class ValidDatesValidator implements ConstraintValidator<ValidDates, Object> {
     private String firstField;
@@ -30,7 +30,7 @@ public class ValidDatesValidator implements ConstraintValidator<ValidDates, Obje
         if (firstFieldValue == null) {
             valid = secondFieldValue == null;
         } else {
-            valid = ((LocalDateTime) firstFieldValue).isBefore((LocalDateTime) secondFieldValue);
+            valid = ((LocalDate) firstFieldValue).isBefore((LocalDate) secondFieldValue);
         }
 
         if (!valid) {
